@@ -31,6 +31,10 @@
         },
         "noChildrenProp": "off"
       },
+      "a11y": {
+        "useSemanticElements": "off",
+        "useKeyWithClickEvents": "off"
+      },
       "style": {
         "noParameterAssign": "off",
         "useSelfClosingElements": "error",
@@ -46,8 +50,7 @@
       },
       "suspicious": {
         "noExplicitAny": "off",
-        "noArrayIndexKey": "off",
-        "noFallThroughCasesInSwitch": "off"
+        "noArrayIndexKey": "off"
       },
       "nursery": {
         "useSortedClasses": {
