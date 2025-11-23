@@ -37,6 +37,8 @@ export class FMPClient {
 
     url.searchParams.set("apikey", this.apiKey);
 
+    console.log(url.toString());
+
     return url;
   };
 
