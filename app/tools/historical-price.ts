@@ -22,7 +22,7 @@ const responseSchema = z.object({
 
 export type ResponseSchema = z.infer<typeof responseSchema>;
 
-export const getHistoricalPrice = tool({
+export const historicalPrice = tool({
   description:
     "Get historical end-of-day (EOD) price data for a stock symbol within a selected date range",
   inputSchema,
@@ -31,6 +31,6 @@ export const getHistoricalPrice = tool({
       params: payload,
     });
 
-    return z.array(responseSchema).parse(data);
+    return data;
   },
 });

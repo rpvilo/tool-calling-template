@@ -3,7 +3,6 @@ import { z } from "zod";
 import { fmpClient } from "@/lib/fmp-client";
 
 const inputSchema = z.object({
-  ticker: z.string().describe("The ticker symbol of the company to get the earnings calendar for"),
   from: z
     .string()
     .optional()
@@ -26,14 +25,16 @@ const responseSchema = z.object({
 
 export type ResponseSchema = z.infer<typeof responseSchema>;
 
-export const getEarningsCalendar = tool({
+export const earningsCalendar = tool({
   description: "Get the earnings calendar showing upcoming earnings announcements for companies",
   inputSchema,
-  execute: async (payload) => {
+  execute: async (params) => {
     const data = await fmpClient.fetch<ResponseSchema[]>("/earnings-calendar", {
-      params: payload,
+      params,
     });
 
-    return z.array(responseSchema).parse(data);
+    console.log(data);
+
+    return data;
   },
 });

@@ -28,7 +28,7 @@ const responseSchema = z.object({
 
 export type ResponseSchema = z.infer<typeof responseSchema>;
 
-export const getIntradayPrice = tool({
+export const intradayPrice = tool({
   description:
     "Get the current intraday quote for a stock symbol including price, change, volume, and other market data",
   inputSchema,
@@ -37,6 +37,6 @@ export const getIntradayPrice = tool({
       params: payload,
     });
 
-    return z.array(responseSchema).parse(data);
+    return data;
   },
 });

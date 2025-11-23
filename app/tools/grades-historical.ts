@@ -5,7 +5,7 @@ import { fmpClient } from "@/lib/fmp-client";
 const inputSchema = z.object({
   symbol: z
     .string()
-    .describe("The stock symbol to get grades and consensus for (e.g., AAPL, MSFT, GOOGL)"),
+    .describe("The stock symbol to get grades and historical for (e.g., AAPL, MSFT, GOOGL)"),
 });
 
 const responseSchema = z.object({
@@ -19,14 +19,14 @@ const responseSchema = z.object({
 
 export type ResponseSchema = z.infer<typeof responseSchema>;
 
-export const getGradesConsensus = tool({
-  description: "Get analyst grades and consensus ratings for a stock symbol",
+export const gradesHistorical = tool({
+  description: "Get analyst grades and historical ratings for a stock symbol",
   inputSchema,
   execute: async (payload) => {
-    const data = await fmpClient.fetch<ResponseSchema[]>("/grades-consensus", {
+    const data = await fmpClient.fetch<ResponseSchema[]>("/grades-historical", {
       params: payload,
     });
 
-    return z.array(responseSchema).parse(data);
+    return data;
   },
 });
