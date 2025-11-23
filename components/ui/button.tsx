@@ -5,21 +5,22 @@ import type * as React from "react";
 import { cn } from "@/lib/utils";
 
 const buttonVariants = cva(
-  "inline-flex items-center justify-center gap-2 whitespace-nowrap font-medium text-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0",
+  "relative inline-flex shrink-0 cursor-pointer items-center justify-center whitespace-nowrap rounded-md bg-clip-padding font-medium text-slate-12 text-sm transition-colors duration-150 hover:duration-0 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0",
   {
     variants: {
       variant: {
         primary:
           "bg-gray-9 text-gray-12 [box-shadow:0px_1px_3px_0px_rgba(0,0,0,0.16),0px_0px_0px_1px_rgba(0,0,0,0.08)_inset,0px_-1px_1px_0px_rgba(0,0,0,0.16)_inset] hover:bg-gray-10",
-        secondary: "bg-secondary text-secondary-foreground shadow-sm hover:bg-secondary/80",
-        ghost: "hover:bg-accent hover:text-accent-foreground",
-        link: "text-primary underline-offset-4 hover:underline",
+        contrast:
+          "border-none bg-gray-12 pr-3 pl-4 text-gray-2 hover:bg-[color-mix(in_srgb,_var(--gray-12)_92%,_black)] hover:text-gray-1",
+        ghost: "hover:bg-gray-10",
       },
       size: {
-        sm: "h-7 rounded-md px-3 text-xs",
-        md: "h-8 rounded-md px-4",
-        lg: "h-9 rounded-md px-8",
-        icon: "h-9 w-9",
+        xs: "h-6 gap-1 rounded-sm px-2 text-xs [&_svg]:size-3",
+        sm: "h-7 gap-1.5 rounded-md px-3 text-xs [&_svg]:size-3",
+        md: "h-8 gap-1.5 px-3 text-sm [&_svg]:size-4",
+        lg: "h-9 gap-2 rounded-md px-3 text-sm [&_svg]:size-4",
+        xl: "h-10 gap-2 rounded-md px-4 text-lg [&_svg]:size-5",
       },
     },
     defaultVariants: {

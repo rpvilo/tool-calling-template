@@ -88,7 +88,7 @@ export const DotLoader = ({
         <div
           key={i}
           data-index={i}
-          className={cn("h-0.5 w-0.5 rounded-sm bg-gray-5 data-[active=true]:bg-gray-11")}
+          className={cn("h-0.5 w-0.5 rounded-sm bg-gray-5 data-[active=true]:bg-gray-12")}
         />
       ))}
     </div>

@@ -4,7 +4,6 @@ import { ArrowDownIcon } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 import { useState } from "react";
 import { useStickToBottomContext } from "use-stick-to-bottom";
-import { ProgressiveBlur } from "./progressive-blur";
 import {
   InputGroup,
   InputGroupAddon,
@@ -40,12 +39,7 @@ const PromptInput = ({ onSubmit }: { onSubmit: (prompt: string) => void }) => {
   };
 
   return (
-    <div className="fixed right-0 bottom-0 left-0 mx-auto w-full max-w-(--conversation-width) pb-6">
-      <ProgressiveBlur
-        direction="bottom"
-        blurIntensity={0.25}
-        className="absolute right-0 bottom-0 left-0 h-[128px]"
-      />
+    <>
       <div className="flex justify-end px-3 pb-3">
         <AnimatePresence>
           {!isAtBottom && (
@@ -63,9 +57,9 @@ const PromptInput = ({ onSubmit }: { onSubmit: (prompt: string) => void }) => {
           )}
         </AnimatePresence>
       </div>
-      <div className="relative">
-        <div className="absolute inset-0 size-full rounded-[16px] border border-gray-3 bg-gray-2/50 brightness-95 backdrop-blur-xs dark:brightness-85" />
-        <form onSubmit={handleSubmit} className="p-1">
+      <div className="relative p-1">
+        <div className="absolute inset-0 size-full rounded-[30px] border border-gray-3 bg-gray-2/50 p-1 brightness-95 backdrop-blur-xs dark:brightness-85" />
+        <form onSubmit={handleSubmit}>
           <InputGroup className="border border-gray-6 opacity-95 backdrop-blur-sm">
             <InputGroupTextarea
               value={prompt}
@@ -79,7 +73,7 @@ const PromptInput = ({ onSubmit }: { onSubmit: (prompt: string) => void }) => {
           </InputGroup>
         </form>
       </div>
-    </div>
+    </>
   );
 };
 

@@ -24,6 +24,7 @@ export const Message = ({
       transition={{ duration: 0.2 }}
       data-slot="message"
       data-role={role}
+      data-message-id={messageId}
       className={cn(
         "group flex w-full gap-2 data-[role=assistant]:justify-start data-[role=user]:justify-end",
 
@@ -40,7 +41,7 @@ export const MessageContent = ({ children, className, ...props }: ComponentProps
     className={cn(
       "flex flex-col gap-2 overflow-hidden border",
       "group-data-[role=user]:max-w-[80%] group-data-[role=user]:rounded-xl group-data-[role=user]:border-gray-4 group-data-[role=user]:bg-gray-9 group-data-[role=user]:p-2.5 group-data-[role=user]:text-gray-12",
-      "group-data-[role=assistant]:border-transparent group-data-[role=assistant]:bg-gray-2 group-data-[role=assistant]:text-gray-12",
+      "group-data-[role=assistant]:border-transparent group-data-[role=assistant]:text-gray-12",
       className,
     )}
     {...props}
@@ -52,10 +53,10 @@ export const MessageContent = ({ children, className, ...props }: ComponentProps
 export const MessageText = memo(
   ({ className, ...props }: ComponentProps<typeof Streamdown>) => (
     <Streamdown
-      className={cn("size-full [&>*:first-child]:mt-0 [&>*:last-child]:mb-0", className)}
+      className={cn("size-full *:text-md [&>*:first-child]:mt-0 [&>*:last-child]:mb-0", className)}
       components={{
         p: ({ children, ...props }) => (
-          <p className={cn("whitespace-pre-wrap text-sm")} {...props}>
+          <p className={cn("whitespace-pre-wrap")} {...props}>
             {children}
           </p>
         ),
