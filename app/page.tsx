@@ -39,10 +39,10 @@ export default function Home() {
             <h1 className="font-semibold text-lg">Intentface AI</h1>
             <Button
               variant="ghost"
-              className="rounded-full"
+              className="rounded-full capitalize"
               onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
             >
-              Theme
+              {theme}
             </Button>
           </div>
         </header>
