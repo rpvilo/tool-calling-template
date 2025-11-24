@@ -1,15 +1,13 @@
 "use client";
 
-import { ArrowDownIcon } from "lucide-react";
+import { ArrowDownIcon, SendIcon } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 import { useState } from "react";
 import { useStickToBottomContext } from "use-stick-to-bottom";
-import {
-  InputGroup,
-  InputGroupAddon,
-  InputGroupButton,
-  InputGroupTextarea,
-} from "./ui/input-group";
+import { cn } from "@/lib/utils";
+import { TextLoop } from "./text-loop";
+import { IconButton } from "./ui/icon-button";
+import { InputGroup, InputGroupAddon, InputGroupTextarea } from "./ui/input-group";
 
 const PromptInput = ({ onSubmit }: { onSubmit: (prompt: string) => void }) => {
   const { isAtBottom, scrollToBottom } = useStickToBottomContext();
@@ -49,7 +47,7 @@ const PromptInput = ({ onSubmit }: { onSubmit: (prompt: string) => void }) => {
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: 8, scale: 0.9 }}
               transition={{ duration: 0.2, ease: "easeOut" }}
-              className="borde flex size-8 items-center justify-center rounded-full border border-gray-4 bg-gray-9 text-gray-12 shadow-sm hover:bg-gray-10"
+              className="borde flex size-9 items-center justify-center rounded-full border border-gray-4 bg-gray-9 shadow-sm hover:bg-gray-10 [&>svg]:stroke-gray-11 hover:[&>svg]:stroke-gray-12"
               onClick={handleScrollToBottom}
             >
               <ArrowDownIcon className="size-4" />
@@ -58,19 +56,23 @@ const PromptInput = ({ onSubmit }: { onSubmit: (prompt: string) => void }) => {
         </AnimatePresence>
       </div>
       <div className="relative p-1">
-        <div className="absolute inset-0 size-full rounded-[30px] border border-gray-3 bg-gray-2/50 p-1 brightness-95 backdrop-blur-xs dark:brightness-85" />
+        <div className="absolute inset-0 size-full rounded-2xl border border-gray-3 bg-gray-2/50 brightness-97 backdrop-blur-xs dark:brightness-85" />
         <form onSubmit={handleSubmit}>
-          <InputGroup className="border border-gray-6 opacity-95 backdrop-blur-sm">
-            <InputGroupTextarea
-              value={prompt}
-              placeholder="Say something..."
-              onChange={(e) => setPrompt(e.target.value)}
-              onKeyDown={handleKeyDown}
-            />
-            <InputGroupAddon align="inline-end">
-              <InputGroupButton variant="primary">Send</InputGroupButton>
-            </InputGroupAddon>
-          </InputGroup>
+          <div>
+            <InputGroup className="border border-gray-6 opacity-95 backdrop-blur-sm">
+              <InputGroupTextarea
+                value={prompt}
+                onChange={(e) => setPrompt(e.target.value)}
+                onKeyDown={handleKeyDown}
+              />
+              <TextLoop className={cn("absolute left-3 h-9", prompt.length > 0 && "opacity-0")} />
+              <InputGroupAddon align="inline-end">
+                <IconButton size="md">
+                  <SendIcon />
+                </IconButton>
+              </InputGroupAddon>
+            </InputGroup>
+          </div>
         </form>
       </div>
     </>

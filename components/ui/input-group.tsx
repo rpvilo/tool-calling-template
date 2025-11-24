@@ -13,7 +13,7 @@ function InputGroup({ className, ...props }: React.ComponentProps<"div">) {
       data-slot="input-group"
       role="group"
       className={cn(
-        "group/input-group relative flex w-full items-center overflow-hidden rounded-[26px] border border-gray-6 bg-gray-9 shadow-xs outline-none transition-[color,box-shadow]",
+        "group/input-group relative flex w-full items-center overflow-hidden rounded-[12px] border border-gray-6 bg-gray-9 p-2 shadow-xs outline-none transition-[color,box-shadow]",
         "h-9 min-w-0 has-[>textarea]:h-auto",
 
         // Variants based on alignment.
@@ -36,14 +36,14 @@ function InputGroup({ className, ...props }: React.ComponentProps<"div">) {
 }
 
 const inputGroupAddonVariants = cva(
-  "flex h-auto cursor-text select-none items-center justify-center gap-2 bg-transparent py-1.5 font-medium text-muted-foreground text-sm group-data-[disabled=true]/input-group:opacity-50 [&>svg:not([class*='size-'])]:size-4",
+  "flex h-auto cursor-text select-none items-center justify-center gap-2 bg-transparent font-medium text-muted-foreground text-sm group-data-[disabled=true]/input-group:opacity-50 [&>svg:not([class*='size-'])]:size-4",
   {
     variants: {
       align: {
-        "inline-start": "order-first pl-3",
-        "inline-end": "order-last pr-3",
-        "block-start": "order-first w-full justify-start px-3 pt-3",
-        "block-end": "order-last w-full justify-start px-3 pb-3",
+        "inline-start": "order-first",
+        "inline-end": "order-last",
+        "block-start": "order-first w-full justify-start",
+        "block-end": "order-last w-full justify-start",
       },
     },
     defaultVariants: {
@@ -109,7 +109,7 @@ function InputGroupText({ className, ...props }: React.ComponentProps<"span">) {
   return (
     <span
       className={cn(
-        "flex items-center gap-2 text-gray-11 text-sm [&_svg:not([class*='size-'])]:size-4 [&_svg]:pointer-events-none",
+        "flex items-center gap-2 text-muted-foreground text-sm [&_svg:not([class*='size-'])]:size-4 [&_svg]:pointer-events-none",
         className,
       )}
       {...props}
