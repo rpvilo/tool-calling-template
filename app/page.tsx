@@ -5,6 +5,8 @@ import { useChat } from "@ai-sdk/react";
 import { DefaultChatTransport } from "ai";
 import { AnimatePresence, motion } from "motion/react";
 import { useTheme } from "next-themes";
+import AnalystRatingChart from "@/components/charts/analyst-rating-chart";
+import { EarningsHistoricalChart } from "@/components/charts/earnings-historical-chart";
 import {
   Conversation,
   ConversationContent,
@@ -71,6 +73,8 @@ export default function Home() {
               )}
             </AnimatePresence>
             <ConversationStatus status={status} />
+            <AnalystRatingChart />
+            <EarningsHistoricalChart />
           </ConversationContent>
           <div>
             <div

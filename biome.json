@@ -35,6 +35,9 @@
         "useSemanticElements": "off",
         "useKeyWithClickEvents": "off"
       },
+      "performance": {
+        "noImgElement": "off"
+      },
       "style": {
         "noParameterAssign": "off",
         "useSelfClosingElements": "error",
