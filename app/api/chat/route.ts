@@ -1,9 +1,12 @@
 // @/app/api/chat/route.ts
 import { google } from "@ai-sdk/google";
 import { convertToModelMessages, smoothStream, stepCountIs, streamText } from "ai";
+import { formatISO } from "date-fns";
 import { companyProfile } from "@/app/tools/company-profile";
 import { dividendsCalendar } from "@/app/tools/dividends-calendar";
 import { earningsCalendar } from "@/app/tools/earnings-calendar";
+import { earningsHistorical } from "@/app/tools/earnings-historical";
+import { gradesConsensus } from "@/app/tools/grades-consensus";
 import { gradesHistorical } from "@/app/tools/grades-historical";
 import { historicalPrice } from "@/app/tools/historical-price";
 import { intradayPrice } from "@/app/tools/intraday-price";
@@ -33,26 +36,26 @@ export async function POST(req: Request) {
     - companyProfile: Get comprehensive company profile information including company details, financial metrics, CEO, sector, industry, description, and business information.
     - earningsCalendar: Get earnings calendar showing upcoming earnings announcements with EPS and revenue estimates vs actuals.
     - dividendsCalendar: Get dividends calendar showing upcoming dividend payments, payment dates, record dates, and dividend yields.
-    - gradesHistorical: Get analyst ratings and consensus (Buy, Hold, Sell, Strong Sell) for stocks.
+    - gradesConsensus: Get analyst consensus ratings (Strong Buy, Buy, Hold, Sell, Strong Sell) and overall consensus recommendation for stocks.
+    - gradesHistorical: Get historical analyst ratings and consensus data over time for stocks.
 
+    Today's date is ${formatISO(new Date(), { representation: "date" })}.
+    
     When users ask about stocks, prices, market data, company information, earnings, dividends, or analyst ratings, use these tools to provide accurate, real-time information. Always use the appropriate tool based on what the user is asking for.
-
+    
     Be conversational and helpful. When presenting financial data, format numbers clearly (e.g., use commas for large numbers, show percentages with % sign). If a user asks about a stock symbol, proactively fetch the current price and relevant company information.`,
 
-    // stopWhen defines when to stop the multi-step tool calling loop
-    // stepCountIs(5) means: stop after 5 steps if tools are still being called
-    // A "step" is one generation cycle (which may include tool calls + results)
-    stopWhen: stepCountIs(3),
+    stopWhen: stepCountIs(5),
 
-    // Tools are functions the LLM can call to perform specific tasks
-    // The LLM decides when to call these tools based on the conversation context
     tools: {
       // Financial Modeling Prep API tools
       intradayPrice,
       historicalPrice,
       companyProfile,
       earningsCalendar,
+      earningsHistorical,
       dividendsCalendar,
+      gradesConsensus,
       gradesHistorical,
     },
   });
