@@ -75,7 +75,6 @@ export default function Home() {
               >
                 <ProgressiveBlur
                   direction="bottom"
-                  blurIntensity={0.25}
                   className="pointer-events-none absolute right-0 bottom-0 left-0 h-[128px]"
                 />
                 <PromptInput onSubmit={(prompt) => sendMessage({ text: prompt })} />

@@ -17,7 +17,6 @@ import type { IntradayPriceSchema } from "@/app/tools/intraday-price";
 import { formatCurrency, formatNumber } from "@/lib/utils";
 import { GlassFrame } from "../glass-frame";
 import SymbolHeader from "../symbol-header";
-import { Separator } from "../ui/separator";
 
 type HistoricalPricesChartProps = {
   data?: {
@@ -26,22 +25,19 @@ type HistoricalPricesChartProps = {
   };
 };
 
-const CustomTooltip = ({ active, payload, label }: any) => {
+const CustomTooltip = ({ active, payload }: any) => {
   if (!active || !payload || payload.length === 0) return null;
 
-  const priceData = payload.find((p: any) => p.dataKey === "price");
-
-  if (!priceData) return null;
+  const data = payload[0].payload;
 
   return (
-    <div className="w-48 select-none rounded-lg border border-gray-4 bg-gray-9 p-3 text-xs shadow-lg">
-      <div className="flex flex-col gap-2">
-        <div className="font-medium text-gray-12 text-xs">{label}</div>
-        <Separator />
+    <div className="w-32 select-none rounded-lg border border-gray-4 bg-gray-9 p-2 text-xs shadow-lg">
+      <div className="flex flex-col gap-1">
+        <div className="font-medium text-gray-12 text-xs">{data.label}</div>
         <div className="flex items-center justify-between gap-2">
           <span className="font-medium text-gray-11 text-xs">Price</span>
-          <span className="font-medium text-gray-12 text-xs">
-            {formatCurrency(priceData.value)}
+          <span className="font-medium text-gray-12 text-xs tabular-nums">
+            {formatCurrency(data.price)}
           </span>
         </div>
       </div>
@@ -62,6 +58,7 @@ export const HistoricalPricesChart = memo(
       return historical.toReversed().map((item) => {
         return {
           date: item.date,
+          label: format(new Date(item.date), "dd MMM yyyy"),
           price: item.price,
         };
       });

@@ -2,17 +2,14 @@
 
 A modern AI-powered stock analysis chatbot built with **Vercel AI SDK v5**, **Next.js 15**, and **Google Gemini**. This template demonstrates tool calling with real financial data from [FinancialModelingPrep](https://financialmodelingprep.com/).
 
-![Stock Analysis Chatbot](https://via.placeholder.com/800x400?text=Stock+Analysis+AI+Chatbot)
 
 ## Features
 
-- 📈 Real-time stock quotes and intraday prices
-- 📊 Historical price charts with date range selection
-- 💰 Earnings data with EPS and revenue tracking
-- 🎯 Analyst consensus ratings visualization
-- 🏢 Comprehensive company profiles
-- 💬 Natural language interface powered by AI
-- ⚡ Streaming responses for real-time updates
+- Real-time stock quotes and intraday prices
+- Historical price charts with date range selection
+- Earnings data with EPS and revenue tracking
+- Analyst consensus ratings visualization
+- Comprehensive company profiles
 
 ## Getting Started
 
