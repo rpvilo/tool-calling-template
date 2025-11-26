@@ -51,7 +51,7 @@ export default function Home() {
             <ConversationTimeline />
             <ConversationContent>
               {messages.length === 0 ? (
-                <div className="flex h-full items-center justify-center">
+                <div className="flex flex-1 items-center justify-center">
                   <motion.div
                     key="empty-state"
                     initial={{ opacity: 0, y: 8, filter: "blur(4px)" }}
