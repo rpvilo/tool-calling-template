@@ -23,7 +23,7 @@ const TextLoop = ({ className, ...props }: ComponentProps<"div">) => {
       className={cn("pointer-events-none flex items-center justify-center", className)}
       {...props}
     >
-      <AnimatePresence mode="popLayout">
+      <AnimatePresence mode="popLayout" initial={false}>
         <motion.span
           key={key}
           initial={{ opacity: 0, y: "100%", filter: "blur(4px)" }}

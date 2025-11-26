@@ -5,8 +5,6 @@ import { useChat } from "@ai-sdk/react";
 import { DefaultChatTransport } from "ai";
 import { AnimatePresence, motion } from "motion/react";
 import { useTheme } from "next-themes";
-import AnalystRatingChart from "@/components/charts/analyst-rating-chart";
-import { EarningsHistoricalChart } from "@/components/charts/earnings-historical-chart";
 import {
   Conversation,
   ConversationContent,
@@ -26,15 +24,12 @@ export default function Home() {
     }),
   });
 
-  console.log(messages);
-
-  console.log(error);
   return (
     <div data-slot="root" className="relative h-dvh w-full">
       <div>
         <header
           data-slot="header"
-          className="fixed top-0 right-0 left-0 flex h-16 items-center bg-linear-to-b from-gray-1 to-transparent p-4"
+          className="fixed top-0 right-0 left-0 z-2 flex h-16 items-center bg-linear-to-b from-gray-1 to-transparent p-4"
         >
           <ProgressiveBlur direction="top" className="fixed top-0 right-0 left-0 h-14" />
           <div className="z-1 flex w-full items-center justify-between gap-2">
@@ -51,12 +46,12 @@ export default function Home() {
       </div>
 
       <>
-        <Conversation>
-          <ConversationTimeline />
-          <ConversationContent>
-            <AnimatePresence mode="wait">
+        <AnimatePresence mode="wait">
+          <Conversation>
+            <ConversationTimeline />
+            <ConversationContent>
               {messages.length === 0 ? (
-                <div className="flex size-full items-center justify-center">
+                <div className="flex h-full items-center justify-center">
                   <motion.div
                     key="empty-state"
                     initial={{ opacity: 0, y: 8, filter: "blur(4px)" }}
@@ -71,25 +66,23 @@ export default function Home() {
               ) : (
                 <Messages messages={messages} />
               )}
-            </AnimatePresence>
-            <ConversationStatus status={status} />
-            <AnalystRatingChart />
-            <EarningsHistoricalChart />
-          </ConversationContent>
-          <div>
-            <div
-              data-slot="prompt-input"
-              className="fixed right-0 bottom-0 left-0 mx-auto w-full max-w-(--conversation-width) bg-linear-to-t from-gray-1 to-transparent pb-8"
-            >
-              <ProgressiveBlur
-                direction="bottom"
-                blurIntensity={0.25}
-                className="pointer-events-none absolute right-0 bottom-0 left-0 h-[128px]"
-              />
-              <PromptInput onSubmit={(prompt) => sendMessage({ text: prompt })} />
+              {status === "submitted" && <ConversationStatus status={status} />}
+            </ConversationContent>
+            <div>
+              <div
+                data-slot="prompt-input"
+                className="fixed right-0 bottom-0 left-0 mx-auto w-full max-w-(--conversation-width) bg-linear-to-t from-gray-1 to-transparent pb-8"
+              >
+                <ProgressiveBlur
+                  direction="bottom"
+                  blurIntensity={0.25}
+                  className="pointer-events-none absolute right-0 bottom-0 left-0 h-[128px]"
+                />
+                <PromptInput onSubmit={(prompt) => sendMessage({ text: prompt })} />
+              </div>
             </div>
-          </div>
-        </Conversation>
+          </Conversation>
+        </AnimatePresence>
       </>
     </div>
   );

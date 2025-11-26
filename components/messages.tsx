@@ -1,22 +1,20 @@
 "use client";
 
 import type { UIMessage } from "ai";
-import type { ResponseSchema as CompanyProfileSchema } from "@/app/tools/company-profile";
-import type { EarningsCalendarSchema } from "@/app/tools/earnings-calendar";
+import type { CompanyProfileSchema } from "@/app/tools/company-profile";
+import type { EarningsHistoricalSchema } from "@/app/tools/earnings-historical";
 import type { GradesConsensusSchema } from "@/app/tools/grades-consensus";
+import type { HistoricalPriceSchema } from "@/app/tools/historical-prices";
+import type { IntradayPriceSchema } from "@/app/tools/intraday-price";
 import AnalystRatingChart from "./charts/analyst-rating-chart";
 import { EarningsHistoricalChart } from "./charts/earnings-historical-chart";
+import { HistoricalPricesChart } from "./charts/historical-prices-chart";
+import { ConversationStatus } from "./conversation";
 import { Message, MessageContent, MessageText } from "./message";
-import UpcomingEarnings from "./upcoming-earnings";
 
 const Messages = ({ messages }: { messages: UIMessage[] }) => {
-  return messages.map((message, index) => (
-    <Message
-      key={message.id}
-      isLastMessage={index === messages.length - 1 && message.role === "assistant"}
-      role={message.role}
-      messageId={message.id}
-    >
+  return messages.map((message) => (
+    <Message key={message.id} role={message.role} messageId={message.id}>
       <MessageContent>
         {message.parts?.map((part, index) => {
           switch (part.type) {
@@ -26,11 +24,7 @@ const Messages = ({ messages }: { messages: UIMessage[] }) => {
               switch (part.state) {
                 case "input-streaming":
                 case "input-available":
-                  return (
-                    <div key={index} className="my-2 text-amber-500 text-sm">
-                      {part.state}...
-                    </div>
-                  );
+                  return <ConversationStatus key={index} status="Getting company profile..." />;
                 case "output-available": {
                   const companyProfileData = part.output as CompanyProfileSchema;
                   return (
@@ -50,42 +44,18 @@ const Messages = ({ messages }: { messages: UIMessage[] }) => {
                 default:
                   return null;
               }
-            case "tool-earningsCalendar":
-              switch (part.state) {
-                case "input-streaming":
-                case "input-available":
-                  return (
-                    <div key={index} className="my-2 text-amber-500 text-sm">
-                      {part.state}...
-                    </div>
-                  );
-
-                case "output-available": {
-                  const earningsCalendarData = part.output as EarningsCalendarSchema;
-                  return <UpcomingEarnings key={index} data={earningsCalendarData} />;
-                }
-                case "output-error":
-                  return (
-                    <div key={index} className="my-2 text-red-500">
-                      Error getting earnings calendar: {part.errorText}
-                    </div>
-                  );
-                default:
-                  return null;
-              }
 
             case "tool-earningsHistorical":
               switch (part.state) {
                 case "input-streaming":
                 case "input-available":
-                  return (
-                    <div key={index} className="my-2 text-amber-500 text-sm">
-                      {part.state}...
-                    </div>
-                  );
+                  return <ConversationStatus key={index} status="Getting historical earnings..." />;
                 case "output-available": {
-                  const earningsHistoricalData = part.output as EarningsCalendarSchema;
-                  return <EarningsHistoricalChart key={index} earnings={earningsHistoricalData} />;
+                  const data = part.output as {
+                    intraday?: IntradayPriceSchema;
+                    earnings?: EarningsHistoricalSchema[];
+                  };
+                  return <EarningsHistoricalChart key={index} data={data} />;
                 }
                 case "output-error":
                   return (
@@ -96,23 +66,44 @@ const Messages = ({ messages }: { messages: UIMessage[] }) => {
                 default:
                   return null;
               }
+
             case "tool-gradesConsensus":
               switch (part.state) {
                 case "input-streaming":
                 case "input-available":
+                  return <ConversationStatus key={index} status="Getting grades consensus..." />;
+                case "output-available": {
+                  const data = part.output as {
+                    intraday: IntradayPriceSchema;
+                    gradesConsensus: GradesConsensusSchema;
+                  };
+                  return <AnalystRatingChart key={index} data={data} />;
+                }
+                case "output-error":
                   return (
-                    <div key={index} className="my-2 text-amber-500 text-sm">
-                      {part.state}...
+                    <div key={index} className="my-2 text-ruby-12 text-sm">
+                      Error getting grades consensus: {part.errorText}
                     </div>
                   );
+                default:
+                  return null;
+              }
+            case "tool-historicalPrices":
+              switch (part.state) {
+                case "input-streaming":
+                case "input-available":
+                  return <ConversationStatus key={index} status="Getting historical prices..." />;
                 case "output-available": {
-                  const gradesConsensusData = part.output as GradesConsensusSchema;
-                  return <AnalystRatingChart key={index} data={gradesConsensusData} />;
+                  const historicalPriceData = part.output as {
+                    intraday?: IntradayPriceSchema;
+                    historical?: HistoricalPriceSchema[];
+                  };
+                  return <HistoricalPricesChart key={index} data={historicalPriceData} />;
                 }
                 case "output-error":
                   return (
                     <div key={index} className="my-2 text-red-500">
-                      Error getting grades consensus: {part.errorText}
+                      Error getting historical prices: {part.errorText}
                     </div>
                   );
                 default:

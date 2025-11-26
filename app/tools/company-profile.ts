@@ -8,7 +8,7 @@ const inputSchema = z.object({
     .describe("The stock symbol to get the company profile for (e.g., AAPL, MSFT, GOOGL)"),
 });
 
-const responseSchema = z.object({
+export const companyProfileSchema = z.object({
   symbol: z.string(),
   price: z.number(),
   marketCap: z.number(),
@@ -47,14 +47,14 @@ const responseSchema = z.object({
   isFund: z.boolean(),
 });
 
-export type ResponseSchema = z.infer<typeof responseSchema>;
+export type CompanyProfileSchema = z.infer<typeof companyProfileSchema>;
 
 export const companyProfile = tool({
   description:
     "Get comprehensive company profile information including company details, financial metrics, and business information",
   inputSchema,
   execute: async (payload) => {
-    const data = await fmpClient.fetch<ResponseSchema>("/profile", {
+    const data = await fmpClient.fetch<CompanyProfileSchema>("/profile", {
       params: payload,
     });
 

@@ -28,7 +28,9 @@ const Separator = ({
   ...props
 }: SeparatorProps) => {
   if (type === "dot") {
-    return <div className={cn("size-0.5 shrink-0 rounded-full bg-gray-8", className)} {...props} />;
+    return (
+      <div className={cn("size-0.5 shrink-0 rounded-full bg-gray-11", className)} {...props} />
+    );
   }
 
   return (

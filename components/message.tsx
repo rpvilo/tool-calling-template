@@ -39,8 +39,8 @@ export const MessageContent = ({ children, className, ...props }: ComponentProps
   <div
     data-slot="message-content"
     className={cn(
-      "flex flex-col gap-2 overflow-hidden border",
-      "group-data-[role=user]:max-w-[80%] group-data-[role=user]:rounded-[16px] group-data-[role=user]:border-gray-4 group-data-[role=user]:bg-gray-9 group-data-[role=user]:p-3 group-data-[role=user]:text-gray-12",
+      "flex flex-col gap-4 overflow-hidden border",
+      "group-data-[role=user]:max-w-[80%] group-data-[role=user]:rounded-[12px] group-data-[role=user]:border-gray-4 group-data-[role=user]:bg-gray-9 group-data-[role=user]:p-3 group-data-[role=user]:text-gray-12",
       "group-data-[role=assistant]:w-full group-data-[role=assistant]:border-transparent group-data-[role=assistant]:text-gray-12",
       className,
     )}

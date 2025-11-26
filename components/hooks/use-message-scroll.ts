@@ -39,41 +39,26 @@ export const useMessageScroll = (scrollRef: React.RefObject<HTMLElement | null>)
   const [lastScrolledMessageId, setLastScrolledMessageId] = useState<string | null>(null);
   const [messages, setMessages] = useState<MessageData[]>([]);
 
-  // Update messages from DOM and initialize last scrolled message
-  useEffect(() => {
-    const updateMessages = () => {
-      const domMessages = getMessagesFromDOM();
-      setMessages(domMessages);
+  // Helper to update messages and initialize last scrolled message
+  const updateMessages = useCallback(() => {
+    const domMessages = getMessagesFromDOM();
+    setMessages(domMessages);
 
-      // Initialize last scrolled message to the last message in the list if not set
-      if (!lastScrolledMessageId && domMessages.length > 0) {
-        const lastId = domMessages[domMessages.length - 1]?.id;
-        if (lastId) {
-          setLastScrolledMessageId(lastId);
-        }
+    // Initialize last scrolled message to the last message in the list if not set
+    if (!lastScrolledMessageId && domMessages.length > 0) {
+      const lastId = domMessages[domMessages.length - 1]?.id;
+      if (lastId) {
+        setLastScrolledMessageId(lastId);
       }
-    };
-
-    // Initial update
-    updateMessages();
-
-    // Set up MutationObserver to watch for DOM changes
-    const observer = new MutationObserver(() => {
-      updateMessages();
-    });
-
-    // Observe the document body for changes
-    observer.observe(document.body, {
-      childList: true,
-      subtree: true,
-      attributes: true,
-      attributeFilter: ["data-message-id", "data-role"],
-    });
-
-    return () => {
-      observer.disconnect();
-    };
+    }
   }, [lastScrolledMessageId]);
+
+  // Initial update on mount
+  useEffect(() => {
+    if (scrollRef.current) {
+      updateMessages();
+    }
+  }, [scrollRef, updateMessages]);
 
   // Track which message is at the top of the viewport on scroll
   useEffect(() => {
@@ -87,6 +72,9 @@ export const useMessageScroll = (scrollRef: React.RefObject<HTMLElement | null>)
       const viewportTop = scrollTop + headerHeight;
 
       const visibleMessageElements = getVisibleMessageElements();
+
+      // Update messages array (we're already querying the DOM)
+      updateMessages();
 
       // Find the message that is at or closest to the top of the viewport
       for (let i = 0; i < visibleMessageElements.length; i++) {
@@ -127,7 +115,7 @@ export const useMessageScroll = (scrollRef: React.RefObject<HTMLElement | null>)
     return () => {
       scrollContainer.removeEventListener("scroll", throttledHandleScroll);
     };
-  }, [scrollRef, lastScrolledMessageId]);
+  }, [scrollRef, lastScrolledMessageId, updateMessages]);
 
   const scrollToMessage = useCallback(
     (messageId: string) => {
@@ -136,6 +124,9 @@ export const useMessageScroll = (scrollRef: React.RefObject<HTMLElement | null>)
       ) as HTMLElement;
 
       if (!messageElement || !scrollRef.current) return;
+
+      // Update messages before scrolling
+      updateMessages();
 
       const messageOffset = messageElement.offsetTop;
       const headerElement = document.querySelector('[data-slot="header"]') as HTMLElement;
@@ -148,16 +139,22 @@ export const useMessageScroll = (scrollRef: React.RefObject<HTMLElement | null>)
 
       setLastScrolledMessageId(messageId);
     },
-    [scrollRef],
+    [scrollRef, updateMessages],
   );
 
   const scrollUp = useCallback(() => {
-    if (!scrollRef.current || !lastScrolledMessageId || messages.length === 0) return;
+    if (!scrollRef.current || !lastScrolledMessageId) return;
 
-    const currentIndex = messages.findIndex((msg) => msg.id === lastScrolledMessageId);
+    // Update messages to get latest state
+    const domMessages = getMessagesFromDOM();
+    setMessages(domMessages);
+
+    if (domMessages.length === 0) return;
+
+    const currentIndex = domMessages.findIndex((msg) => msg.id === lastScrolledMessageId);
     if (currentIndex === -1 || currentIndex === 0) return; // Already at first message
 
-    const previousMessage = messages[currentIndex - 1];
+    const previousMessage = domMessages[currentIndex - 1];
     if (!previousMessage) return;
 
     const headerElement = document.querySelector('[data-slot="header"]') as HTMLElement;
@@ -175,15 +172,21 @@ export const useMessageScroll = (scrollRef: React.RefObject<HTMLElement | null>)
     });
 
     setLastScrolledMessageId(previousMessage.id);
-  }, [scrollRef, lastScrolledMessageId, messages]);
+  }, [scrollRef, lastScrolledMessageId]);
 
   const scrollDown = useCallback(() => {
-    if (!scrollRef.current || !lastScrolledMessageId || messages.length === 0) return;
+    if (!scrollRef.current || !lastScrolledMessageId) return;
 
-    const currentIndex = messages.findIndex((msg) => msg.id === lastScrolledMessageId);
-    if (currentIndex === -1 || currentIndex === messages.length - 1) return; // Already at last message
+    // Update messages to get latest state
+    const domMessages = getMessagesFromDOM();
+    setMessages(domMessages);
 
-    const nextMessage = messages[currentIndex + 1];
+    if (domMessages.length === 0) return;
+
+    const currentIndex = domMessages.findIndex((msg) => msg.id === lastScrolledMessageId);
+    if (currentIndex === -1 || currentIndex === domMessages.length - 1) return; // Already at last message
+
+    const nextMessage = domMessages[currentIndex + 1];
     if (!nextMessage) return;
 
     const headerElement = document.querySelector('[data-slot="header"]') as HTMLElement;
@@ -201,7 +204,7 @@ export const useMessageScroll = (scrollRef: React.RefObject<HTMLElement | null>)
     });
 
     setLastScrolledMessageId(nextMessage.id);
-  }, [scrollRef, lastScrolledMessageId, messages]);
+  }, [scrollRef, lastScrolledMessageId]);
 
   return {
     scrollToMessage,

@@ -3,12 +3,9 @@ import { google } from "@ai-sdk/google";
 import { convertToModelMessages, smoothStream, stepCountIs, streamText } from "ai";
 import { formatISO } from "date-fns";
 import { companyProfile } from "@/app/tools/company-profile";
-import { dividendsCalendar } from "@/app/tools/dividends-calendar";
-import { earningsCalendar } from "@/app/tools/earnings-calendar";
 import { earningsHistorical } from "@/app/tools/earnings-historical";
 import { gradesConsensus } from "@/app/tools/grades-consensus";
-import { gradesHistorical } from "@/app/tools/grades-historical";
-import { historicalPrice } from "@/app/tools/historical-price";
+import { historicalPrices } from "@/app/tools/historical-prices";
 import { intradayPrice } from "@/app/tools/intraday-price";
 
 // Maximum duration for the API route (in seconds)
@@ -29,34 +26,32 @@ export async function POST(req: Request) {
     experimental_transform: smoothStream({ chunking: "word", delayInMs: 20 }),
 
     // System prompt defines the AI's behavior and personality
-    system: `You are a helpful financial assistant that can provide real-time and historical stock market data. You have access to the following financial tools:
-
-    - intradayPrice: Get current stock quotes including price, volume, market cap, and other real-time market data for any stock symbol (e.g., AAPL, MSFT, GOOGL)
-    - historicalPrice: Get historical end-of-day (EOD) price data for stocks within a date range. Useful for analyzing price trends over time.
-    - companyProfile: Get comprehensive company profile information including company details, financial metrics, CEO, sector, industry, description, and business information.
-    - earningsCalendar: Get earnings calendar showing upcoming earnings announcements with EPS and revenue estimates vs actuals.
-    - dividendsCalendar: Get dividends calendar showing upcoming dividend payments, payment dates, record dates, and dividend yields.
-    - gradesConsensus: Get analyst consensus ratings (Strong Buy, Buy, Hold, Sell, Strong Sell) and overall consensus recommendation for stocks.
-    - gradesHistorical: Get historical analyst ratings and consensus data over time for stocks.
+    system: `You are a helpful financial assistant with access to real-time and historical stock market data.
 
     Today's date is ${formatISO(new Date(), { representation: "date" })}.
-    
-    When users ask about stocks, prices, market data, company information, earnings, dividends, or analyst ratings, use these tools to provide accurate, real-time information. Always use the appropriate tool based on what the user is asking for.
-    
-    Be conversational and helpful. When presenting financial data, format numbers clearly (e.g., use commas for large numbers, show percentages with % sign). If a user asks about a stock symbol, proactively fetch the current price and relevant company information.`,
+
+    ALWAYS USE TOOLS FIRST. When a user asks anything about stocks, prices, earnings, analyst ratings, or company information, immediately call the appropriate tool before responding. Never answer from memory when a tool can provide accurate data.
+
+    Available tools:
+    - intradayPrice: Current and recent price data (open, high, low, close, volume)
+    - historicalPrices: Historical daily price data for any date range
+    - earningsHistorical: Earnings data including EPS, revenue, gross profit, net income
+    - gradesConsensus: Analyst ratings and consensus recommendations
+    - companyProfile: Company details (name, ticker, sector, industry, description)
+
+    Users may refer to companies by name or ticker symbol. If they use a company name (e.g., "Apple", "Tesla", "Microsoft"), you already know the corresponding ticker—use it directly when calling tools.
+
+    After executing any tool, provide a brief conversational summary of the key insights. Do NOT restate raw data in lists, bullets, or tables—the data is already displayed visually. Instead, offer interpretation: trends, comparisons, implications, and what the numbers mean for the investor.`,
 
     stopWhen: stepCountIs(5),
 
     tools: {
       // Financial Modeling Prep API tools
       intradayPrice,
-      historicalPrice,
+      historicalPrices,
       companyProfile,
-      earningsCalendar,
       earningsHistorical,
-      dividendsCalendar,
       gradesConsensus,
-      gradesHistorical,
     },
   });
 

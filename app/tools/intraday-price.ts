@@ -6,7 +6,7 @@ const inputSchema = z.object({
   symbol: z.string().describe("The stock symbol to get the quote for (e.g., AAPL, MSFT, GOOGL)"),
 });
 
-const responseSchema = z.object({
+const intradayPriceSchema = z.object({
   symbol: z.string(),
   name: z.string(),
   price: z.number(),
@@ -26,14 +26,14 @@ const responseSchema = z.object({
   timestamp: z.number(),
 });
 
-export type ResponseSchema = z.infer<typeof responseSchema>;
+export type IntradayPriceSchema = z.infer<typeof intradayPriceSchema>;
 
 export const intradayPrice = tool({
   description:
     "Get the current intraday quote for a stock symbol including price, change, volume, and other market data",
   inputSchema,
   execute: async (payload) => {
-    const data = await fmpClient.fetch<ResponseSchema[]>("/quote", {
+    const data = await fmpClient.fetch<IntradayPriceSchema[]>("/quote", {
       params: payload,
     });
 

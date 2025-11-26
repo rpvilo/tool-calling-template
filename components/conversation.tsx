@@ -1,7 +1,6 @@
 "use client";
 
 import { TooltipProvider } from "@radix-ui/react-tooltip";
-import type { ChatStatus } from "ai";
 import { ArrowDownIcon, ChevronDown, ChevronUp } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 import type { ComponentProps } from "react";
@@ -104,25 +103,19 @@ export const ConversationScrollButton = ({
   );
 };
 
-export const ConversationStatus = ({ status }: { status: ChatStatus }) => {
-  if (status === "submitted") {
-    return (
-      <AnimatePresence>
-        <motion.div
-          initial={{ opacity: 0, filter: "blur(4px)" }}
-          animate={{ opacity: 1, filter: "blur(0px)" }}
-          exit={{ opacity: 0, filter: "blur(4px)" }}
-          transition={{ duration: 0.2, ease: "easeOut" }}
-          className="my-2 flex items-center gap-2"
-        >
-          <DotLoader />
-          <span className="font-medium text-gray-11 text-sm capitalize">{status}...</span>
-        </motion.div>
-      </AnimatePresence>
-    );
-  }
-
-  return null;
+export const ConversationStatus = ({ status }: { status?: string }) => {
+  return (
+    <motion.div
+      initial={{ opacity: 0, filter: "blur(4px)" }}
+      animate={{ opacity: 1, filter: "blur(0px)" }}
+      exit={{ opacity: 0, filter: "blur(4px)" }}
+      transition={{ duration: 0.2, ease: "easeOut" }}
+      className="my-2 flex items-center gap-2"
+    >
+      <DotLoader />
+      <span className="font-medium text-gray-11 text-sm capitalize">{status ?? "Thinking"}...</span>
+    </motion.div>
+  );
 };
 
 export const ConversationTimeline = ({
@@ -166,7 +159,7 @@ export const ConversationTimeline = ({
                           {
                             "w-3": message.role === "assistant",
                             "w-2": message.role === "user",
-                            "w-4 bg-gray-12": message.id === lastScrolledMessageId,
+                            "w-4 bg-gray-11": message.id === lastScrolledMessageId,
                           },
                         )}
                       />

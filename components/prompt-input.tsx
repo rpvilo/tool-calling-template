@@ -1,10 +1,12 @@
 "use client";
 
-import { ArrowDownIcon, SendIcon } from "lucide-react";
+import { ArrowDownIcon } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 import { useState } from "react";
 import { useStickToBottomContext } from "use-stick-to-bottom";
 import { cn } from "@/lib/utils";
+import { GlassFrame } from "./glass-frame";
+import { SendIcon } from "./icons/send-icon";
 import { TextLoop } from "./text-loop";
 import { IconButton } from "./ui/icon-button";
 import { InputGroup, InputGroupAddon, InputGroupTextarea } from "./ui/input-group";
@@ -55,26 +57,23 @@ const PromptInput = ({ onSubmit }: { onSubmit: (prompt: string) => void }) => {
           )}
         </AnimatePresence>
       </div>
-      <div className="relative p-1">
-        <div className="absolute inset-0 size-full rounded-2xl border border-gray-3 bg-gray-2/50 brightness-97 backdrop-blur-xs dark:brightness-85" />
+      <GlassFrame>
         <form onSubmit={handleSubmit}>
-          <div>
-            <InputGroup className="border border-gray-6 opacity-95 backdrop-blur-sm">
-              <InputGroupTextarea
-                value={prompt}
-                onChange={(e) => setPrompt(e.target.value)}
-                onKeyDown={handleKeyDown}
-              />
-              <TextLoop className={cn("absolute left-3 h-9", prompt.length > 0 && "opacity-0")} />
-              <InputGroupAddon align="inline-end">
-                <IconButton size="md">
-                  <SendIcon />
-                </IconButton>
-              </InputGroupAddon>
-            </InputGroup>
-          </div>
+          <InputGroup className="border border-gray-5 opacity-95 backdrop-blur-sm">
+            <InputGroupTextarea
+              value={prompt}
+              onChange={(e) => setPrompt(e.target.value)}
+              onKeyDown={handleKeyDown}
+            />
+            <TextLoop className={cn("absolute left-3 h-9", prompt.length > 0 && "opacity-0")} />
+            <InputGroupAddon align="inline-end">
+              <IconButton size="md" variant="ghost">
+                <SendIcon />
+              </IconButton>
+            </InputGroupAddon>
+          </InputGroup>
         </form>
-      </div>
+      </GlassFrame>
     </>
   );
 };
