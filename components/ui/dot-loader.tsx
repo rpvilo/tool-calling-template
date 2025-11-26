@@ -4,23 +4,33 @@ import { type ComponentProps, useCallback, useEffect, useRef } from "react";
 import { cn } from "@/lib/utils";
 
 const DEFAULT_FRAMES = [
-  // Top-left to bottom-left
+  // // Top-left to bottom-left
   [0, 1, 5, 6], // (0,0),(0,1),(1,0),(1,1)
   [5, 6, 10, 11], // (1,0),(1,1),(2,0),(2,1)
   [10, 11, 15, 16], // (2,0),(2,1),(3,0),(3,1)
-  // Bottom-left to bottom-right
+  // // Bottom-left to bottom-right
   [15, 16, 20, 21], // (3,0),(3,1),(4,0),(4,1)
   [16, 17, 21, 22], // (3,1),(3,2),(4,1),(4,2)
   [17, 18, 22, 23], // (3,2),(3,3),(4,2),(4,3)
-  // Bottom-right to top-right
+  // // Bottom-right to top-right
   [18, 19, 23, 24], // (3,3),(3,4),(4,3),(4,4)
   [13, 14, 18, 19], // (2,3),(2,4),(3,3),(3,4)
   [8, 9, 13, 14], // (1,3),(1,4),(2,3),(2,4)
-  // Top-right to top-left
+  // // Top-right to top-left
   [3, 4, 8, 9], // (0,3),(0,4),(1,3),(1,4)
   [2, 3, 7, 8], // (0,2),(0,3),(1,2),(1,3)
   [1, 2, 6, 7], // (0,1),(0,2),(1,1),(1,2)
+  // Cross orbit starting from top-center
 ];
+
+// [3, 7, 8, 9, 13], // center 8 -> around top
+// [8, 12, 13, 14, 18], // shift down along right side
+// [13, 17, 18, 19, 23], // reach bottom-right
+// [12, 16, 17, 18, 22], // move along bottom row
+// [11, 15, 16, 17, 21], // curve toward left-bottom
+// [6, 10, 11, 12, 16], // ascend left side
+// [1, 5, 6, 7, 11], // near top-left
+// [2, 6, 7, 8, 12], // slide back to starting column
 
 type DotLoaderProps = {
   duration?: number;
@@ -43,7 +53,7 @@ export const DotLoader = ({
 
   const applyFrameToDots = useCallback(
     (dots: HTMLDivElement[], frameIndex: number) => {
-      const frame = DEFAULT_FRAMES[frameIndex];
+      const frame = frames[frameIndex];
       if (!frame) return;
 
       dots.forEach((dot, index) => {
