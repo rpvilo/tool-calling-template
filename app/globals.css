@@ -23,8 +23,8 @@
   text-size-adjust: none;
   isolation: isolate;
 
-  --gray-1: oklch(98.5% 0 0);
-  --gray-2: oklch(97.4% 0 0);
+  --gray-1: oklch(97.3% 0 0);
+  --gray-2: oklch(98.4% 0 0);
   --gray-3: oklch(95.3% 0 0);
   --gray-4: oklch(93.2% 0 0);
   --gray-5: oklch(91% 0 0);
@@ -38,7 +38,19 @@
 }
 
 .dark {
-  --gray-1: oklch(17.8% 0.002 286.051);
+  --gray-1: oklch(17.3% 0.002 286);
+  --gray-2: oklch(19.6% 0.002 286);
+  --gray-3: oklch(21.3% 0.002 286);
+  --gray-4: oklch(23.1% 0.002 286);
+  --gray-5: oklch(25.2% 0.002 286);
+  --gray-6: oklch(27.3% 0.002 286);
+  --gray-7: oklch(29.1% 0.002 286);
+  --gray-8: oklch(31.5% 0.002 286);
+  --gray-9: oklch(20.3% 0.002 286);
+  --gray-10: oklch(22.7% 0.002 286);
+  --gray-11: oklch(58.3% 0.002 285);
+  --gray-12: oklch(81.3% 0.002 285);
+  /* --gray-1: oklch(17.8% 0.002 286.051);
   --gray-2: oklch(19.6% 0.002 286.056);
   --gray-3: oklch(21.3% 0.002 286.051);
   --gray-4: oklch(23.1% 0.002 286.052);
@@ -49,7 +61,7 @@
   --gray-9: oklch(20.3% 0.002 286.051);
   --gray-10: oklch(21.8% 0.002 286.055);
   --gray-11: oklch(58.3% 0.002 285);
-  --gray-12: oklch(81.3% 0.002 285);
+  --gray-12: oklch(81.3% 0.002 285); */
 }
 
 @theme inline {

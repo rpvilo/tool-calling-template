@@ -6,15 +6,13 @@ import { cn } from "@/lib/utils";
 import { useLoop } from "./hooks/use-loop";
 
 const items = [
-  "Show the upcoming earnings dates for Microsoft",
-  "Get analyst ratings for Nvidia",
-  "How has Google's stock performed this month?",
-  "What is the latest price for Amazon",
-  "List companies reporting earnings tomorrow",
-  "Show the EPS actuals for Apple last quarter",
-  "Compare revenue estimates for Tesla and Ford",
-  "Any major earnings announcements next week?",
+  "What's the current price of Tesla?",
+  "Show me Apple's stock history for the past year",
+  "How did Nvidia's last quarter earnings compare to estimates?",
+  "What do analysts think about Amazon?",
+  "Tell me about Microsoft as a company",
 ];
+
 const TextLoop = ({ className, ...props }: ComponentProps<"div">) => {
   const { currentItem, key } = useLoop(items);
 

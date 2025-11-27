@@ -1,17 +1,28 @@
 "use client";
 
-import { ArrowDownIcon } from "lucide-react";
+import type { ChatStatus } from "ai";
 import { AnimatePresence, motion } from "motion/react";
 import { useState } from "react";
 import { useStickToBottomContext } from "use-stick-to-bottom";
 import { cn } from "@/lib/utils";
 import { GlassFrame } from "./glass-frame";
+import ArrowDownIcon from "./icons/arrow-down-icon";
 import { SendIcon } from "./icons/send-icon";
+import StopIcon from "./icons/stop-icon";
+import { ProgressiveBlur } from "./progressive-blur";
 import { TextLoop } from "./text-loop";
 import { IconButton } from "./ui/icon-button";
 import { InputGroup, InputGroupAddon, InputGroupTextarea } from "./ui/input-group";
 
-const PromptInput = ({ onSubmit }: { onSubmit: (prompt: string) => void }) => {
+const PromptInput = ({
+  status,
+  onStop,
+  onSubmit,
+}: {
+  status: ChatStatus;
+  onStop: () => void;
+  onSubmit: (prompt: string) => void;
+}) => {
   const { isAtBottom, scrollToBottom } = useStickToBottomContext();
 
   const [prompt, setPrompt] = useState("");
@@ -39,17 +50,25 @@ const PromptInput = ({ onSubmit }: { onSubmit: (prompt: string) => void }) => {
   };
 
   return (
-    <>
+    <div
+      data-slot="prompt-input"
+      className="fixed right-0 bottom-0 left-0 mx-auto w-full max-w-(--conversation-width) bg-linear-to-t from-gray-1 to-transparent pb-8"
+    >
+      <ProgressiveBlur
+        direction="bottom"
+        className="pointer-events-none absolute right-0 bottom-0 left-0 h-[128px]"
+      />
       <div className="flex justify-end px-3 pb-3">
         <AnimatePresence>
           {!isAtBottom && (
             <motion.button
               type="button"
+              aria-label="Scroll to bottom"
               initial={{ opacity: 0, y: 8, scale: 0.9 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: 8, scale: 0.9 }}
               transition={{ duration: 0.2, ease: "easeOut" }}
-              className="borde flex size-9 items-center justify-center rounded-full border border-gray-4 bg-gray-9 shadow-sm hover:bg-gray-10 [&>svg]:stroke-gray-11 hover:[&>svg]:stroke-gray-12"
+              className="borde flex size-9 items-center justify-center rounded-full border border-gray-4 bg-gray-9 shadow-md hover:bg-gray-10 [&>svg]:fill-gray-11 hover:[&>svg]:fill-gray-12"
               onClick={handleScrollToBottom}
             >
               <ArrowDownIcon className="size-4" />
@@ -57,24 +76,36 @@ const PromptInput = ({ onSubmit }: { onSubmit: (prompt: string) => void }) => {
           )}
         </AnimatePresence>
       </div>
-      <GlassFrame>
+      <GlassFrame
+        initial={{ opacity: 0, y: 8, filter: "blur(4px)" }}
+        animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+        transition={{ duration: 0.5, ease: "easeOut" }}
+      >
         <form onSubmit={handleSubmit}>
-          <InputGroup className="border border-gray-5 opacity-95 backdrop-blur-sm">
+          <InputGroup className="border border-gray-4 opacity-95 backdrop-blur-sm">
+            <TextLoop className={cn("absolute left-3 h-9", prompt.length > 0 && "opacity-0")} />
             <InputGroupTextarea
+              autoFocus
+              aria-label="Message input"
               value={prompt}
               onChange={(e) => setPrompt(e.target.value)}
               onKeyDown={handleKeyDown}
             />
-            <TextLoop className={cn("absolute left-3 h-9", prompt.length > 0 && "opacity-0")} />
             <InputGroupAddon align="inline-end">
-              <IconButton size="md" variant="ghost">
-                <SendIcon />
-              </IconButton>
+              {status === "streaming" || status === "submitted" ? (
+                <IconButton size="md" variant="ghost" aria-label="Stop generating" onClick={onStop}>
+                  <StopIcon />
+                </IconButton>
+              ) : (
+                <IconButton size="md" variant="ghost" aria-label="Generate response" type="submit">
+                  <SendIcon />
+                </IconButton>
+              )}
             </InputGroupAddon>
           </InputGroup>
         </form>
       </GlassFrame>
-    </>
+    </div>
   );
 };
 

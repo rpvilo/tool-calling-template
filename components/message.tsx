@@ -50,6 +50,16 @@ export const MessageContent = ({ children, className, ...props }: ComponentProps
   </div>
 );
 
+export const MessageActions = ({ children, className, ...props }: ComponentProps<"div">) => (
+  <div
+    data-slot="message-actions"
+    className={cn("flex items-center justify-start gap-2", className)}
+    {...props}
+  >
+    {children}
+  </div>
+);
+
 export const MessageText = memo(
   ({ className, ...props }: ComponentProps<typeof Streamdown>) => (
     <Streamdown

@@ -151,7 +151,7 @@ export const HistoricalPricesChart = memo(
 
     return (
       <GlassFrame>
-        <div className="relative flex h-full w-full shrink-0 flex-col gap-3 overflow-hidden rounded-[12px] border border-gray-4 bg-gray-9">
+        <div className="relative flex h-full w-full shrink-0 flex-col gap-3 overflow-hidden rounded-[12px] border border-gray-4 bg-gray-2">
           <SymbolHeader intraday={intraday} />
           {/* Chart */}
           <div className="min-h-80 w-full">
@@ -223,42 +223,42 @@ export const HistoricalPricesChart = memo(
           </div>
           {/* Financial Metrics */}
           <div className="grid grid-cols-1 gap-px bg-gray-4 pt-px sm:grid-cols-3">
-            <div className="flex items-center justify-between bg-gray-9 p-3">
+            <div className="flex items-center justify-between bg-gray-2 p-3">
               <span className="text-gray-11 text-xs">Prev Close</span>
               <span className="font-medium text-gray-12 text-sm">
                 {formatCurrency(previousClose)}
               </span>
             </div>
 
-            <div className="flex items-center justify-between bg-gray-9 p-3">
+            <div className="flex items-center justify-between bg-gray-2 p-3">
               <span className="text-gray-11 text-xs">Day Range</span>
               <span className="font-medium text-gray-12 text-sm">
                 {formatCurrency(intraday.dayLow)} - {formatCurrency(intraday.dayHigh)}
               </span>
             </div>
 
-            <div className="flex items-center justify-between bg-gray-9 p-3">
+            <div className="flex items-center justify-between bg-gray-2 p-3">
               <span className="text-gray-11 text-xs">Market Cap</span>
               <span className="font-medium text-gray-12 text-sm">
                 {formatCurrency(intraday.marketCap)}
               </span>
             </div>
 
-            <div className="flex items-center justify-between bg-gray-9 p-3">
+            <div className="flex items-center justify-between bg-gray-2 p-3">
               <span className="text-gray-11 text-xs">Open</span>
               <span className="font-medium text-gray-12 text-sm">
                 {formatCurrency(intraday.open)}
               </span>
             </div>
 
-            <div className="flex items-center justify-between bg-gray-9 p-3">
+            <div className="flex items-center justify-between bg-gray-2 p-3">
               <span className="text-gray-11 text-xs">Year Range</span>
               <span className="font-medium text-gray-12 text-sm">
                 {formatCurrency(intraday.yearLow)} - {formatCurrency(intraday.yearHigh)}
               </span>
             </div>
 
-            <div className="flex items-center justify-between bg-gray-9 p-3">
+            <div className="flex items-center justify-between bg-gray-2 p-3">
               <span className="text-gray-11 text-xs">Volume</span>
               <span className="font-medium text-gray-12 text-sm">
                 {formatNumber(intraday.volume)}
