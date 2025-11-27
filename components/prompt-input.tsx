@@ -77,9 +77,9 @@ const PromptInput = ({
         </AnimatePresence>
       </div>
       <GlassFrame
-        initial={{ opacity: 0, y: 8, filter: "blur(4px)" }}
-        animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-        transition={{ duration: 0.5, ease: "easeOut" }}
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 0.5, delay: 1, ease: "easeOut" }}
       >
         <form onSubmit={handleSubmit}>
           <InputGroup className="border border-gray-4 opacity-95 backdrop-blur-sm">

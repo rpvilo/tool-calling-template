@@ -19,20 +19,20 @@ const Suggestions = ({ onSuggestionClick, className, ...props }: SuggestionsProp
   return (
     <motion.div
       variants={{
-        hidden: {},
-        visible: {
+        initial: {},
+        animate: {
           transition: { delayChildren: stagger(0.1, { from: "first", startDelay: 0.5 }) },
         },
       }}
-      initial="hidden"
-      animate="visible"
+      initial="initial"
+      animate="animate"
       className={cn("flex flex-1 flex-col items-center justify-center gap-4", className)}
       {...props}
     >
       <motion.h2
         variants={{
-          hidden: { opacity: 0, y: 12 },
-          visible: { opacity: 1, y: 0 },
+          initial: { opacity: 0 },
+          animate: { opacity: 1 },
         }}
         className="font-[550] text-3xl text-gray-12"
       >
@@ -45,8 +45,8 @@ const Suggestions = ({ onSuggestionClick, className, ...props }: SuggestionsProp
               key={suggestion}
               onClick={() => onSuggestionClick(suggestion)}
               variants={{
-                hidden: { opacity: 0, y: 12 },
-                visible: { opacity: 1, y: 0 },
+                initial: { opacity: 0, y: 12 },
+                animate: { opacity: 1, y: 0 },
               }}
               className="flex h-10 items-center gap-2 rounded-lg px-3 transition-colors hover:bg-gray-10"
             >
