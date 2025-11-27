@@ -5,7 +5,6 @@ A modern AI-powered stock analysis chatbot built with **Vercel AI SDK v5**, **Ne
 
 ## Features
 
-- Real-time stock quotes and intraday prices
 - Historical price charts with date range selection
 - Earnings data with EPS and revenue tracking
 - Analyst consensus ratings visualization
@@ -61,21 +60,7 @@ Open [http://localhost:3000](http://localhost:3000) in your browser.
 
 The chatbot has access to the following tools for fetching and analyzing stock data:
 
-### 1. Intraday Price (`intradayPrice`)
-
-Get the current real-time quote for a stock including price, change, volume, and market data.
-
-**Example prompts:**
-- "What's the current price of Apple?"
-- "Show me TSLA's stock price"
-- "How is NVIDIA doing today?"
-- "Get me a quote for Microsoft"
-
-**Data includes:** Current price, price change ($ and %), volume, day high/low, year high/low, market cap, 50-day and 200-day moving averages.
-
----
-
-### 2. Historical Prices (`historicalPrices`)
+### 1. Historical Prices (`historicalPrices`)
 
 Get historical end-of-day prices for a stock within a specified date range. Defaults to the last year if no dates are provided.
 
@@ -89,7 +74,7 @@ Get historical end-of-day prices for a stock within a specified date range. Defa
 
 ---
 
-### 3. Earnings Historical (`earningsHistorical`)
+### 2. Earnings Historical (`earningsHistorical`)
 
 Get the latest earnings data including EPS (Earnings Per Share) and revenue, comparing actual vs estimated figures.
 
@@ -103,7 +88,7 @@ Get the latest earnings data including EPS (Earnings Per Share) and revenue, com
 
 ---
 
-### 4. Analyst Ratings (`gradesConsensus`)
+### 3. Analyst Ratings (`gradesConsensus`)
 
 Get analyst consensus ratings showing the distribution of Strong Buy, Buy, Hold, Sell, and Strong Sell recommendations.
 
@@ -117,7 +102,7 @@ Get analyst consensus ratings showing the distribution of Strong Buy, Buy, Hold,
 
 ---
 
-### 5. Company Profile (`companyProfile`)
+### 4. Company Profile (`companyProfile`)
 
 Get comprehensive company information including business description, financial metrics, and corporate details.
 

@@ -1,7 +1,6 @@
 "use client";
 
 import type { UIMessage } from "ai";
-import { AlertTriangleIcon } from "lucide-react";
 import type { CompanyProfileSchema } from "@/app/tools/company-profile";
 import type { EarningsHistoricalSchema } from "@/app/tools/earnings-historical";
 import type { GradesConsensusSchema } from "@/app/tools/grades-consensus";
@@ -13,6 +12,7 @@ import { AnalystRatingTool } from "./tools/analyst-rating-tool";
 import { CompanyProfileTool } from "./tools/company-profile-tool";
 import { EarningsHistoricalTool } from "./tools/earnings-historical-tool";
 import { HistoricalPricesTool } from "./tools/historical-prices-tool";
+import ToolError from "./tools/tool-error";
 
 const Messages = ({ messages }: { messages: UIMessage[] }) => {
   return messages.map((message) => (
@@ -33,9 +33,11 @@ const Messages = ({ messages }: { messages: UIMessage[] }) => {
                 }
                 case "output-error":
                   return (
-                    <div key={index} className="my-2 text-red-500">
-                      Error getting weather: {part.errorText}
-                    </div>
+                    <ToolError
+                      key={index}
+                      title="Error getting company profile"
+                      message={part.errorText}
+                    />
                   );
                 default:
                   return null;
@@ -55,9 +57,11 @@ const Messages = ({ messages }: { messages: UIMessage[] }) => {
                 }
                 case "output-error":
                   return (
-                    <div key={index} className="my-2 text-red-500">
-                      Error getting earnings historical: {part.errorText}
-                    </div>
+                    <ToolError
+                      key={index}
+                      title="Error getting earnings"
+                      message={part.errorText}
+                    />
                   );
                 default:
                   return null;
@@ -77,9 +81,11 @@ const Messages = ({ messages }: { messages: UIMessage[] }) => {
                 }
                 case "output-error":
                   return (
-                    <div key={index} className="my-2 text-ruby-12 text-sm">
-                      Error getting grades consensus: {part.errorText}
-                    </div>
+                    <ToolError
+                      key={index}
+                      title="Error getting analyst ratings"
+                      message={part.errorText}
+                    />
                   );
                 default:
                   return null;
@@ -98,16 +104,11 @@ const Messages = ({ messages }: { messages: UIMessage[] }) => {
                 }
                 case "output-error":
                   return (
-                    <div
+                    <ToolError
                       key={index}
-                      className="z-10 flex gap-2 rounded-md border border-ruby-6 bg-ruby-2 p-3 text-ruby-9 text-sm"
-                    >
-                      <AlertTriangleIcon className="size-5 shrink-0" />
-                      <div className="flex flex-col gap-2">
-                        <p className="font-medium text-md">Error getting historical prices</p>
-                        <p className="text-sm">{part.errorText}</p>
-                      </div>
-                    </div>
+                      title="Error getting historical prices"
+                      message={part.errorText}
+                    />
                   );
                 default:
                   return null;
