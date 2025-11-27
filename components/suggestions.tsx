@@ -1,8 +1,8 @@
-import { CornerDownRightIcon } from "lucide-react";
 import { motion, stagger } from "motion/react";
 import type { ComponentProps } from "react";
 import { cn } from "@/lib/utils";
 import { GlassFrame } from "./glass-frame";
+import { SendIcon } from "./icons/send-icon";
 
 const SUGGESTIONS = [
   "Show me Tesla's company profile",
@@ -48,9 +48,9 @@ const Suggestions = ({ onSuggestionClick, className, ...props }: SuggestionsProp
                 initial: { opacity: 0, y: 12 },
                 animate: { opacity: 1, y: 0 },
               }}
-              className="flex h-10 items-center gap-2 rounded-lg px-3 transition-colors hover:bg-gray-10"
+              className="flex h-10 items-center gap-2 rounded-lg px-3 transition-colors hover:bg-gray-3"
             >
-              <CornerDownRightIcon className="size-4 text-gray-11" />
+              <SendIcon className="size-4 text-gray-11" />
               <span className="text-gray-12 text-md">{suggestion}</span>
             </motion.button>
           ))}
