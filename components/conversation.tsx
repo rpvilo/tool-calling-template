@@ -1,10 +1,10 @@
 "use client";
 
 import { TooltipProvider } from "@radix-ui/react-tooltip";
-import { ArrowDownIcon, ChevronDown, ChevronUp } from "lucide-react";
-import { AnimatePresence, motion } from "motion/react";
+import type { UIMessage } from "ai";
+import { ChevronDown, ChevronUp } from "lucide-react";
+import { motion } from "motion/react";
 import type { ComponentProps } from "react";
-import { useCallback } from "react";
 import { StickToBottom, useStickToBottomContext } from "use-stick-to-bottom";
 import { cn } from "@/lib/utils";
 import { useMessageScroll } from "./hooks/use-message-scroll";
@@ -35,123 +35,130 @@ export const ConversationContent = ({ className, ...props }: ConversationContent
   />
 );
 
-export const ConversationScrollButton = ({
+export const ConversationEmptyState = ({
   className,
+  children,
   ...props
-}: ComponentProps<typeof motion.button>) => {
-  const { isAtBottom, scrollToBottom } = useStickToBottomContext();
-
-  const handleScrollToBottom = useCallback(() => {
-    scrollToBottom();
-  }, [scrollToBottom]);
-
+}: ComponentProps<"div">) => {
   return (
-    <AnimatePresence>
-      {!isAtBottom && (
-        <div className="flex justify-end px-3 pb-3">
-          <motion.button
-            type="button"
-            initial={{ opacity: 0, y: 8, scale: 0.9 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 8, scale: 0.9 }}
-            transition={{ duration: 0.2, ease: "easeOut" }}
-            className={cn(
-              "borde flex size-8 items-center justify-center rounded-full border border-gray-4 bg-gray-9 text-gray-12 shadow-sm hover:bg-gray-10",
-              className,
-            )}
-            onClick={handleScrollToBottom}
-            {...props}
-          >
-            <ArrowDownIcon className="size-4" />
-          </motion.button>
-        </div>
-      )}
-    </AnimatePresence>
+    <div className={cn("flex flex-1 items-center justify-center", className)} {...props}>
+      {children}
+    </div>
   );
 };
 
 export const ConversationStatus = ({ status }: { status?: string }) => {
   return (
     <motion.div
+      role="status"
+      aria-live="polite"
       initial={{ opacity: 0, filter: "blur(4px)" }}
       animate={{ opacity: 1, filter: "blur(0px)" }}
       exit={{ opacity: 0, filter: "blur(4px)" }}
       transition={{ duration: 0.2, ease: "easeOut" }}
       className="my-2 flex items-center gap-2"
     >
-      <DotLoader />
-      <span className="font-medium text-gray-11 text-sm capitalize">{status ?? "Thinking"}...</span>
+      <DotLoader aria-hidden="true" />
+      <span className="font-medium text-gray-11 text-sm capitalize">{status ?? "Thinking..."}</span>
     </motion.div>
   );
 };
 
+export type ConversationTimelineProps = ComponentProps<typeof motion.div> & {
+  messages?: UIMessage[];
+};
+
 export const ConversationTimeline = ({
   className,
+  messages = [],
   ...props
-}: ComponentProps<typeof motion.div>) => {
+}: ConversationTimelineProps) => {
   const { scrollRef } = useStickToBottomContext();
-  const { scrollToMessage, scrollUp, scrollDown, messages, lastScrolledMessageId } =
-    useMessageScroll(scrollRef);
+  const {
+    scrollToMessage,
+    scrollUp,
+    scrollDown,
+    timelineMessages,
+    currentMessageId,
+    canScrollUp,
+    canScrollDown,
+  } = useMessageScroll(scrollRef, messages);
 
   if (messages.length < 4) return null;
 
   return (
     <TooltipProvider>
-      <div className="-translate-y-1/2 absolute top-1/2 right-3 z-10">
+      <motion.nav
+        aria-label="Message timeline"
+        className="-translate-y-1/2 absolute top-1/2 right-3 z-10"
+        initial={{ opacity: 0, x: 8 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ duration: 0.2, ease: "easeOut" }}
+      >
         <motion.div className={cn("group/timeline flex flex-col items-end", className)} {...props}>
           <button
             type="button"
+            aria-label="Scroll to previous message"
             onClick={scrollUp}
-            className="flex size-7.5 translate-y-1 items-center justify-center rounded-full opacity-0 transition-all hover:border-gray-4 hover:bg-gray-4 group-hover/timeline:translate-y-0 group-hover/timeline:scale-100 group-hover/timeline:opacity-100 [&>svg]:stroke-gray-11 hover:[&>svg]:stroke-gray-12"
+            disabled={!canScrollUp}
+            className={cn(
+              "flex size-7.5 translate-y-1 items-center justify-center rounded-full opacity-0 transition-all group-hover/timeline:translate-y-0 group-hover/timeline:scale-100 group-hover/timeline:opacity-100 [&>svg]:stroke-gray-11",
+              canScrollUp && "hover:border-gray-4 hover:bg-gray-4 hover:[&>svg]:stroke-gray-12",
+              !canScrollUp && "cursor-not-allowed [&>svg]:stroke-gray-6",
+            )}
           >
             <ChevronUp className="size-3.5" />
           </button>
           <div className="flex flex-col">
-            {messages
-              .filter((message) => message.role !== "system")
-              .map((message) => (
-                <Tooltip key={message.id}>
-                  <TooltipTrigger asChild>
-                    <button
-                      className="group/bar flex h-3 w-10 items-center justify-end px-2 transition-all"
-                      key={message.id}
-                      onClick={() => scrollToMessage(message.id)}
-                      type="button"
-                    >
-                      <div
-                        key={message.id}
-                        className={cn(
-                          "h-px rounded-full bg-gray-7 transition-[width,background-color]",
-                          "group-hover/bar:w-4 group-hover/bar:bg-gray-11",
-                          {
-                            "w-3": message.role === "assistant",
-                            "w-2": message.role === "user",
-                            "w-4 bg-gray-11": message.id === lastScrolledMessageId,
-                          },
-                        )}
-                      />
-                    </button>
-                  </TooltipTrigger>
-                  <TooltipContent
-                    side="left"
-                    align="center"
-                    sideOffset={10}
-                    className="max-w-60 overflow-hidden truncate text-pretty"
+            {timelineMessages.map((message, index) => (
+              <Tooltip key={message.id}>
+                <TooltipTrigger asChild>
+                  <button
+                    className="group/bar flex h-3 w-10 items-center justify-end px-2 transition-all"
+                    onClick={() => scrollToMessage(message.id)}
+                    type="button"
+                    aria-label={`Jump to ${message.role === "user" ? "your" : "assistant"} message ${index + 1}`}
                   >
-                    <span className="whitespace-pre-wrap">{message.content}</span>
-                  </TooltipContent>
-                </Tooltip>
-              ))}
+                    <div
+                      aria-hidden="true"
+                      className={cn(
+                        "h-px rounded-full bg-gray-7 transition-[width,background-color]",
+                        "group-hover/bar:w-4 group-hover/bar:bg-gray-11",
+                        {
+                          "w-3": message.role === "assistant",
+                          "w-2": message.role === "user",
+                          "w-4 bg-gray-11": message.id === currentMessageId,
+                        },
+                      )}
+                    />
+                  </button>
+                </TooltipTrigger>
+                <TooltipContent
+                  side="left"
+                  align="center"
+                  sideOffset={10}
+                  className="max-w-48 overflow-hidden truncate text-balance"
+                >
+                  <span className="whitespace-pre-wrap">{message.label}</span>
+                </TooltipContent>
+              </Tooltip>
+            ))}
           </div>
           <button
             type="button"
+            aria-label="Scroll to next message"
             onClick={scrollDown}
-            className="flex size-7.5 translate-y-0 items-center justify-center rounded-full opacity-0 transition-all hover:bg-gray-4 group-hover/timeline:translate-y-1 group-hover/timeline:scale-100 group-hover/timeline:opacity-100 [&>svg]:stroke-gray-11 hover:[&>svg]:stroke-gray-12"
+            disabled={!canScrollDown}
+            className={cn(
+              "flex size-7.5 translate-y-0 items-center justify-center rounded-full opacity-0 transition-all group-hover/timeline:translate-y-1 group-hover/timeline:scale-100 group-hover/timeline:opacity-100 [&>svg]:stroke-gray-11",
+              canScrollDown && "hover:bg-gray-4 hover:[&>svg]:stroke-gray-12",
+              !canScrollDown && "cursor-not-allowed [&>svg]:stroke-gray-6",
+            )}
           >
             <ChevronDown className="size-3.5" />
           </button>
         </motion.div>
-      </div>
+      </motion.nav>
     </TooltipProvider>
   );
 };

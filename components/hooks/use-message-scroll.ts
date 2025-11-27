@@ -1,216 +1,184 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import type { UIMessage } from "ai";
+import { useCallback, useEffect, useMemo, useState } from "react";
 
-export type MessageData = {
-  id: string;
-  role: string;
-  content: string;
+const MAX_LABEL_LENGTH = 60;
+const HEADER_HEIGHT = 64; // h-16 in tailwind
+
+const truncateText = (text: string, maxLength: number = MAX_LABEL_LENGTH): string => {
+  const oneLiner = text.replace(/\n+/g, " ").trim();
+  if (oneLiner.length <= maxLength) return oneLiner;
+  return `${oneLiner.slice(0, maxLength)}...`;
 };
 
-const getVisibleMessageElements = () => {
-  const allMessageElements = Array.from(
-    document.querySelectorAll("[data-message-id]"),
-  ) as HTMLElement[];
-  const visibleMessageElements = allMessageElements.filter(
-    (el) => el.getAttribute("data-role") !== "system",
+const getToolCallInfo = (
+  parts: UIMessage["parts"],
+): { toolName: string; symbol?: string } | null => {
+  const toolPart = parts.find((part) => part.type.startsWith("tool-"));
+  if (!toolPart) return null;
+
+  const toolName = toolPart.type.replace("tool-", "");
+  const input = "input" in toolPart ? (toolPart.input as Record<string, unknown>) : null;
+  const symbol = input?.symbol as string | undefined;
+  return { toolName, symbol };
+};
+
+const getTextContent = (parts: UIMessage["parts"]): string => {
+  const textPart = parts.find((part) => part.type === "text");
+  return textPart && "text" in textPart ? textPart.text : "";
+};
+
+const formatToolName = (toolName: string): string =>
+  toolName
+    .replace(/([A-Z])/g, " $1")
+    .replace(/^./, (str) => str.toUpperCase())
+    .trim();
+
+const getMessageLabel = (message: UIMessage): string => {
+  const parts = message.parts ?? [];
+
+  if (message.role === "user") {
+    const textContent = getTextContent(parts);
+    return textContent ? truncateText(textContent) : "User message";
+  }
+
+  if (message.role === "assistant") {
+    const toolCallInfo = getToolCallInfo(parts);
+    if (toolCallInfo) {
+      const { toolName, symbol } = toolCallInfo;
+      const formattedName = formatToolName(toolName);
+      return symbol ? `${formattedName} (${symbol.toUpperCase()})` : formattedName;
+    }
+
+    const textContent = getTextContent(parts);
+    return textContent ? truncateText(textContent) : "Assistant message";
+  }
+
+  return "Message";
+};
+
+export const useMessageScroll = (
+  scrollRef: React.RefObject<HTMLElement | null>,
+  messages: UIMessage[] = [],
+) => {
+  const [currentMessageId, setCurrentMessageId] = useState<string | null>(null);
+
+  // Memoize processed messages - only recalculate when messages array changes
+  const timelineMessages = useMemo(
+    () =>
+      messages
+        .filter((msg) => msg.role !== "system")
+        .map((msg) => ({
+          id: msg.id,
+          role: msg.role,
+          label: getMessageLabel(msg),
+        })),
+    [messages],
   );
-  visibleMessageElements.sort((a, b) => a.offsetTop - b.offsetTop);
-  return visibleMessageElements;
-};
 
-const getMessagesFromDOM = (): MessageData[] => {
-  const visibleMessageElements = getVisibleMessageElements();
-  return visibleMessageElements.map((element) => {
-    const id = element.getAttribute("data-message-id") ?? "";
-    const role = element.getAttribute("data-role") ?? "";
-    const contentElement = element.querySelector('[data-slot="message-content"]');
-    const content = contentElement?.textContent?.trim() ?? "";
+  // Memoize current index lookup
+  const currentIndex = useMemo(
+    () =>
+      currentMessageId ? timelineMessages.findIndex((msg) => msg.id === currentMessageId) : -1,
+    [currentMessageId, timelineMessages],
+  );
 
-    return {
-      id,
-      role,
-      content,
-    };
-  });
-};
-
-export const useMessageScroll = (scrollRef: React.RefObject<HTMLElement | null>) => {
-  const [lastScrolledMessageId, setLastScrolledMessageId] = useState<string | null>(null);
-  const [messages, setMessages] = useState<MessageData[]>([]);
-
-  // Helper to update messages and initialize last scrolled message
-  const updateMessages = useCallback(() => {
-    const domMessages = getMessagesFromDOM();
-    setMessages(domMessages);
-
-    // Initialize last scrolled message to the last message in the list if not set
-    if (!lastScrolledMessageId && domMessages.length > 0) {
-      const lastId = domMessages[domMessages.length - 1]?.id;
-      if (lastId) {
-        setLastScrolledMessageId(lastId);
+  // Initialize current message to the last message
+  useEffect(() => {
+    if (timelineMessages.length > 0) {
+      const lastMessage = timelineMessages[timelineMessages.length - 1];
+      if (lastMessage) {
+        setCurrentMessageId(lastMessage.id);
       }
     }
-  }, [lastScrolledMessageId]);
+  }, [timelineMessages.length]);
 
-  // Initial update on mount
-  useEffect(() => {
-    if (scrollRef.current) {
-      updateMessages();
-    }
-  }, [scrollRef, updateMessages]);
-
-  // Track which message is at the top of the viewport on scroll
+  // Track scroll position and update current message
   useEffect(() => {
     const scrollContainer = scrollRef.current;
     if (!scrollContainer) return;
 
+    let ticking = false;
+
     const handleScroll = () => {
-      const headerElement = document.querySelector('[data-slot="header"]') as HTMLElement;
-      const headerHeight = headerElement?.offsetHeight ?? 0;
       const scrollTop = scrollContainer.scrollTop;
-      const viewportTop = scrollTop + headerHeight;
+      const viewportTop = scrollTop + HEADER_HEIGHT;
 
-      const visibleMessageElements = getVisibleMessageElements();
+      const messageElements = document.querySelectorAll<HTMLElement>(
+        '[data-message-id][data-role]:not([data-role="system"])',
+      );
 
-      // Update messages array (we're already querying the DOM)
-      updateMessages();
-
-      // Find the message that is at or closest to the top of the viewport
-      for (let i = 0; i < visibleMessageElements.length; i++) {
-        const messageElement = visibleMessageElements[i];
-        if (!messageElement) continue;
-
-        const messageTop = messageElement.offsetTop;
-        const messageBottom = messageTop + messageElement.offsetHeight;
-
-        // Check if this message is at the top of the viewport (accounting for header)
-        if (messageTop <= viewportTop && messageBottom > viewportTop) {
-          const messageId = messageElement.getAttribute("data-message-id");
-          if (messageId && messageId !== lastScrolledMessageId) {
-            setLastScrolledMessageId(messageId);
-          }
+      for (const el of messageElements) {
+        const top = el.offsetTop;
+        if (top <= viewportTop && top + el.offsetHeight > viewportTop) {
+          const id = el.dataset.messageId;
+          if (id) setCurrentMessageId(id);
           break;
         }
       }
     };
 
-    // Throttle scroll events for better performance
-    let ticking = false;
-    const throttledHandleScroll = () => {
+    const onScroll = () => {
       if (!ticking) {
+        ticking = true;
         requestAnimationFrame(() => {
           handleScroll();
           ticking = false;
         });
-        ticking = true;
       }
     };
 
-    scrollContainer.addEventListener("scroll", throttledHandleScroll, { passive: true });
+    scrollContainer.addEventListener("scroll", onScroll, { passive: true });
+    return () => scrollContainer.removeEventListener("scroll", onScroll);
+  }, [scrollRef]);
 
-    // Initial check
-    handleScroll();
+  const scrollToElement = useCallback(
+    (messageId: string) => {
+      const el = document.querySelector<HTMLElement>(`[data-message-id="${messageId}"]`);
+      if (!el || !scrollRef.current) return;
 
-    return () => {
-      scrollContainer.removeEventListener("scroll", throttledHandleScroll);
-    };
-  }, [scrollRef, lastScrolledMessageId, updateMessages]);
+      scrollRef.current.scrollTo({
+        top: el.offsetTop - HEADER_HEIGHT,
+        behavior: "smooth",
+      });
+    },
+    [scrollRef],
+  );
 
   const scrollToMessage = useCallback(
     (messageId: string) => {
-      const messageElement = document.querySelector(
-        `[data-message-id="${messageId}"]`,
-      ) as HTMLElement;
-
-      if (!messageElement || !scrollRef.current) return;
-
-      // Update messages before scrolling
-      updateMessages();
-
-      const messageOffset = messageElement.offsetTop;
-      const headerElement = document.querySelector('[data-slot="header"]') as HTMLElement;
-      const headerHeight = headerElement?.offsetHeight ?? 0;
-
-      scrollRef.current.scrollTo({
-        top: messageOffset - headerHeight,
-        behavior: "smooth",
-      });
-
-      setLastScrolledMessageId(messageId);
+      setCurrentMessageId(messageId);
+      scrollToElement(messageId);
     },
-    [scrollRef, updateMessages],
+    [scrollToElement],
   );
 
   const scrollUp = useCallback(() => {
-    if (!scrollRef.current || !lastScrolledMessageId) return;
-
-    // Update messages to get latest state
-    const domMessages = getMessagesFromDOM();
-    setMessages(domMessages);
-
-    if (domMessages.length === 0) return;
-
-    const currentIndex = domMessages.findIndex((msg) => msg.id === lastScrolledMessageId);
-    if (currentIndex === -1 || currentIndex === 0) return; // Already at first message
-
-    const previousMessage = domMessages[currentIndex - 1];
-    if (!previousMessage) return;
-
-    const headerElement = document.querySelector('[data-slot="header"]') as HTMLElement;
-    const headerHeight = headerElement?.offsetHeight ?? 0;
-
-    const messageElement = document.querySelector(
-      `[data-message-id="${previousMessage.id}"]`,
-    ) as HTMLElement;
-    if (!messageElement) return;
-
-    const messageOffset = messageElement.offsetTop;
-    scrollRef.current.scrollTo({
-      top: messageOffset - headerHeight,
-      behavior: "smooth",
-    });
-
-    setLastScrolledMessageId(previousMessage.id);
-  }, [scrollRef, lastScrolledMessageId]);
+    if (currentIndex <= 0) return;
+    const prev = timelineMessages[currentIndex - 1];
+    if (prev) {
+      setCurrentMessageId(prev.id);
+      scrollToElement(prev.id);
+    }
+  }, [currentIndex, timelineMessages, scrollToElement]);
 
   const scrollDown = useCallback(() => {
-    if (!scrollRef.current || !lastScrolledMessageId) return;
-
-    // Update messages to get latest state
-    const domMessages = getMessagesFromDOM();
-    setMessages(domMessages);
-
-    if (domMessages.length === 0) return;
-
-    const currentIndex = domMessages.findIndex((msg) => msg.id === lastScrolledMessageId);
-    if (currentIndex === -1 || currentIndex === domMessages.length - 1) return; // Already at last message
-
-    const nextMessage = domMessages[currentIndex + 1];
-    if (!nextMessage) return;
-
-    const headerElement = document.querySelector('[data-slot="header"]') as HTMLElement;
-    const headerHeight = headerElement?.offsetHeight ?? 0;
-
-    const messageElement = document.querySelector(
-      `[data-message-id="${nextMessage.id}"]`,
-    ) as HTMLElement;
-    if (!messageElement) return;
-
-    const messageOffset = messageElement.offsetTop;
-    scrollRef.current.scrollTo({
-      top: messageOffset - headerHeight,
-      behavior: "smooth",
-    });
-
-    setLastScrolledMessageId(nextMessage.id);
-  }, [scrollRef, lastScrolledMessageId]);
+    if (currentIndex < 0 || currentIndex >= timelineMessages.length - 1) return;
+    const next = timelineMessages[currentIndex + 1];
+    if (next) {
+      setCurrentMessageId(next.id);
+      scrollToElement(next.id);
+    }
+  }, [currentIndex, timelineMessages, scrollToElement]);
 
   return {
     scrollToMessage,
     scrollUp,
     scrollDown,
-    lastScrolledMessageId,
-    messages,
+    currentMessageId,
+    timelineMessages,
+    canScrollUp: currentIndex > 0,
+    canScrollDown: currentIndex >= 0 && currentIndex < timelineMessages.length - 1,
   };
 };
