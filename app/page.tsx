@@ -15,7 +15,7 @@ import PromptInput from "@/components/prompt-input";
 import Suggestions from "@/components/suggestions";
 
 export default function Home() {
-  const { messages, sendMessage, status, stop, resumeStream } = useChat({
+  const { messages, sendMessage, status, stop } = useChat({
     transport: new DefaultChatTransport({
       api: "/api/chat",
     }),
@@ -28,8 +28,6 @@ export default function Home() {
   const handleStop = () => {
     if (status === "streaming" || status === "submitted") {
       stop();
-    } else {
-      resumeStream();
     }
   };
 

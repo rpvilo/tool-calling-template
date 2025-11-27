@@ -145,7 +145,9 @@ export const HistoricalPricesTool = memo(
 
     if (!intraday || !historical || historical.length === 0) {
       return (
-        <div className="my-8 text-center text-gray-500">No historical price data to display.</div>
+        <div className="my-8 text-center font-medium text-gray-11 text-md">
+          No historical price data to display.
+        </div>
       );
     }
 
