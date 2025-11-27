@@ -45,7 +45,7 @@ const Suggestions = ({ onSuggestionClick, className, ...props }: SuggestionsProp
             hidden: { opacity: 0, y: 12 },
             visible: { opacity: 1, y: 0 },
           }}
-          className="flex h-10 items-center gap-2 rounded-md px-3 transition-colors hover:bg-gray-4"
+          className="flex h-10 items-center gap-2 rounded-lg px-3 transition-colors hover:bg-gray-4"
         >
           <CornerDownRightIcon className="size-4 text-gray-11" />
           <span className="text-gray-12 text-md">{suggestion}</span>
