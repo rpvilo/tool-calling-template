@@ -15,7 +15,7 @@ import { formatPercentage, pluralize } from "@/lib/utils";
 import { GlassFrame } from "../glass-frame";
 import SymbolHeader from "../symbol-header";
 
-type AnalystRatingChartProps = {
+type AnalystRatingToolProps = {
   data: {
     intraday: IntradayPriceSchema;
     gradesConsensus: GradesConsensusSchema;
@@ -30,8 +30,24 @@ const LABELS = {
   strongSell: "Strong Sell",
 } as const;
 
-const AnalystRatingChart = memo(
-  ({ data }: AnalystRatingChartProps) => {
+const CustomTooltip = ({ active, payload }: any) => {
+  if (!active || !payload?.[0]) return null;
+  const data = payload[0].payload;
+  return (
+    <div className="flex flex-col gap-1 rounded-lg border border-gray-6 bg-gray-9 p-2 shadow-lg">
+      <p className="font-medium text-gray-12 text-xs">{data.label}</p>
+      <div className="flex items-baseline gap-1">
+        <span className="font-medium text-gray-12 text-sm">
+          {formatPercentage(data.percentage, { signDisplay: "never" })}
+        </span>
+        <span className="text-gray-11 text-xs">({pluralize(data.value, "analyst")})</span>
+      </div>
+    </div>
+  );
+};
+
+export const AnalystRatingTool = memo(
+  ({ data }: AnalystRatingToolProps) => {
     const intraday = data.intraday;
     const gradesConsensus = data.gradesConsensus;
 
@@ -194,23 +210,7 @@ const AnalystRatingChart = memo(
                   wrapperStyle={{
                     transition: "transform 0.4s cubic-bezier(0.23, 1, 0.32, 1) 0s",
                   }}
-                  content={({ active, payload }) => {
-                    if (!active || !payload?.[0]) return null;
-                    const data = payload[0].payload as (typeof chartData)[number];
-                    return (
-                      <div className="flex flex-col gap-1 rounded-lg border border-gray-6 bg-gray-9 p-2 shadow-lg">
-                        <p className="font-medium text-gray-12 text-xs">{data.label}</p>
-                        <div className="flex items-baseline gap-1">
-                          <span className="font-medium text-gray-12 text-sm">
-                            {formatPercentage(data.percentage, { signDisplay: "never" })}
-                          </span>
-                          <span className="text-gray-11 text-xs">
-                            ({pluralize(data.value, "analyst")})
-                          </span>
-                        </div>
-                      </div>
-                    );
-                  }}
+                  content={<CustomTooltip />}
                 />
               </RadarChart>
             </ResponsiveContainer>
@@ -220,11 +220,6 @@ const AnalystRatingChart = memo(
     );
   },
   (prevProps, nextProps) => {
-    // Only re-render if data actually changed
     return JSON.stringify(prevProps.data) === JSON.stringify(nextProps.data);
   },
 );
-
-AnalystRatingChart.displayName = "AnalystRatingChart";
-
-export default AnalystRatingChart;

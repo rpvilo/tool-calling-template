@@ -12,10 +12,10 @@ import {
 import Header from "@/components/header";
 import Messages from "@/components/messages";
 import PromptInput from "@/components/prompt-input";
-import Suggestions from "@/components/suggestion";
+import Suggestions from "@/components/suggestions";
 
 export default function Home() {
-  const { messages, sendMessage, status, stop } = useChat({
+  const { messages, sendMessage, status, stop, resumeStream } = useChat({
     transport: new DefaultChatTransport({
       api: "/api/chat",
     }),
@@ -23,6 +23,14 @@ export default function Home() {
 
   const handleSendMessage = (suggestion: string) => {
     sendMessage({ text: suggestion });
+  };
+
+  const handleStop = () => {
+    if (status === "streaming" || status === "submitted") {
+      stop();
+    } else {
+      resumeStream();
+    }
   };
 
   return (
@@ -36,9 +44,9 @@ export default function Home() {
           ) : (
             <Messages messages={messages} />
           )}
-          {status === "submitted" && <ConversationStatus status={status} />}
+          {status === "submitted" && <ConversationStatus />}
         </ConversationContent>
-        <PromptInput status={status} onStop={stop} onSubmit={handleSendMessage} />
+        <PromptInput status={status} onStop={handleStop} onSubmit={handleSendMessage} />
       </Conversation>
     </div>
   );

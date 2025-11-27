@@ -54,10 +54,10 @@ export const companyProfile = tool({
     "Get comprehensive company profile information including company details, financial metrics, and business information",
   inputSchema,
   execute: async (payload) => {
-    const data = await fmpClient.fetch<CompanyProfileSchema>("/profile", {
+    const data = await fmpClient.fetch<CompanyProfileSchema[]>("/profile", {
       params: payload,
     });
 
-    return data;
+    return data.at(0);
   },
 });

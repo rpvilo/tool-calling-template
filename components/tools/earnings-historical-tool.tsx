@@ -113,15 +113,15 @@ const CustomTooltip = ({ active, payload }: any) => {
   );
 };
 
-type EarningsHistoricalChartProps = {
+type EarningsHistoricalToolProps = {
   data: {
     intraday?: IntradayPriceSchema;
     earnings?: EarningsHistoricalSchema[];
   };
 };
 
-export const EarningsHistoricalChart = memo(
-  ({ data }: EarningsHistoricalChartProps) => {
+export const EarningsHistoricalTool = memo(
+  ({ data }: EarningsHistoricalToolProps) => {
     const { intraday, earnings } = data;
 
     const earningsData = useMemo(() => {
@@ -291,9 +291,6 @@ export const EarningsHistoricalChart = memo(
     );
   },
   (prevProps, nextProps) => {
-    // Only re-render if earnings data actually changed
     return JSON.stringify(prevProps.data) === JSON.stringify(nextProps.data);
   },
 );
-
-EarningsHistoricalChart.displayName = "EarningsHistoricalChart";

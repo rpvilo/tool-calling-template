@@ -15,9 +15,8 @@ const Header = () => {
         initial={{ opacity: 0, y: -8, filter: "blur(4px)" }}
         animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
         transition={{ duration: 0.5, ease: "easeOut" }}
-        className="z-1 flex w-full items-center justify-between gap-2"
+        className="z-1 flex w-full items-center justify-end"
       >
-        <h1 className="font-semibold text-lg">Wall Street AI</h1>
         <ThemeButton />
       </motion.div>
     </header>

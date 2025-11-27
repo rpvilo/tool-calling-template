@@ -142,6 +142,7 @@
   --text-md: 0.875rem;
 
   --font-sans: var(--font-inter), system-ui;
+  --font-serif: var(--font-instrument-serif);
 
   --conversation-width: 48rem;
 }
@@ -179,6 +180,11 @@ body {
   background: var(--color-gray-1);
   border-color: var(--color-gray-6);
   min-height: 100svh;
+
+  ::selection {
+    background-color: var(--color-gray-6);
+    color: var(--color-gray-12);
+  }
 }
 
 div#root {

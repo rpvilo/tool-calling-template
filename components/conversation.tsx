@@ -59,7 +59,9 @@ export const ConversationStatus = ({ status }: { status?: string }) => {
       className="my-2 flex items-center gap-2"
     >
       <DotLoader aria-hidden="true" />
-      <span className="font-medium text-gray-11 text-sm capitalize">{status ?? "Thinking..."}</span>
+      <span className="font-medium text-gray-11 text-sm capitalize">
+        {status ?? "Processing..."}
+      </span>
     </motion.div>
   );
 };

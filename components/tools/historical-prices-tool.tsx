@@ -18,7 +18,7 @@ import { formatCurrency, formatNumber } from "@/lib/utils";
 import { GlassFrame } from "../glass-frame";
 import SymbolHeader from "../symbol-header";
 
-type HistoricalPricesChartProps = {
+type HistoricalPricesToolProps = {
   data?: {
     intraday?: IntradayPriceSchema;
     historical?: HistoricalPriceSchema[];
@@ -45,8 +45,8 @@ const CustomTooltip = ({ active, payload }: any) => {
   );
 };
 
-export const HistoricalPricesChart = memo(
-  ({ data }: HistoricalPricesChartProps) => {
+export const HistoricalPricesTool = memo(
+  ({ data }: HistoricalPricesToolProps) => {
     // Use test data if no data provided
     const intraday = data?.intraday;
     const historical = data?.historical;
@@ -270,9 +270,6 @@ export const HistoricalPricesChart = memo(
     );
   },
   (prevProps, nextProps) => {
-    // Only re-render if data actually changed
     return JSON.stringify(prevProps.data) === JSON.stringify(nextProps.data);
   },
 );
-
-HistoricalPricesChart.displayName = "HistoricalPricesChart";

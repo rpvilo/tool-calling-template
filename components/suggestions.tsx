@@ -33,7 +33,7 @@ const Suggestions = ({ onSuggestionClick, className, ...props }: SuggestionsProp
           hidden: { opacity: 0, y: 12 },
           visible: { opacity: 1, y: 0 },
         }}
-        className="font-medium text-2xl text-gray-11"
+        className="font-[550] text-3xl text-gray-12"
       >
         Hi, I'm Wall Street AI. <br /> I'm here to help you with your investing questions. <br />{" "}
       </motion.h2>

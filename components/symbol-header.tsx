@@ -4,7 +4,10 @@ import StockLogo from "./stock-logo";
 import { Separator } from "./ui/separator";
 
 type SymbolHeaderProps = {
-  intraday?: IntradayPriceSchema;
+  intraday?: Pick<
+    IntradayPriceSchema,
+    "symbol" | "name" | "exchange" | "price" | "change" | "changePercentage"
+  >;
 };
 
 const SymbolHeader = ({ intraday }: SymbolHeaderProps) => {
@@ -27,7 +30,7 @@ const SymbolHeader = ({ intraday }: SymbolHeaderProps) => {
         </div>
       </div>
       <div className="flex flex-col items-end">
-        <span className="font-semibold text-md">{formatCurrency(intraday.price)}</span>
+        <span className="font-medium text-md">{formatCurrency(intraday.price)}</span>
         <div className="flex items-center gap-1">
           <span className={cn("font-medium text-xs", priceColor)}>
             {formatCurrency(intraday.change)}

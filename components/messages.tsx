@@ -1,16 +1,18 @@
 "use client";
 
 import type { UIMessage } from "ai";
+import { AlertTriangleIcon } from "lucide-react";
 import type { CompanyProfileSchema } from "@/app/tools/company-profile";
 import type { EarningsHistoricalSchema } from "@/app/tools/earnings-historical";
 import type { GradesConsensusSchema } from "@/app/tools/grades-consensus";
 import type { HistoricalPriceSchema } from "@/app/tools/historical-prices";
 import type { IntradayPriceSchema } from "@/app/tools/intraday-price";
-import AnalystRatingChart from "./charts/analyst-rating-chart";
-import { EarningsHistoricalChart } from "./charts/earnings-historical-chart";
-import { HistoricalPricesChart } from "./charts/historical-prices-chart";
 import { ConversationStatus } from "./conversation";
 import { Message, MessageContent, MessageText } from "./message";
+import { AnalystRatingTool } from "./tools/analyst-rating-tool";
+import { CompanyProfileTool } from "./tools/company-profile-tool";
+import { EarningsHistoricalTool } from "./tools/earnings-historical-tool";
+import { HistoricalPricesTool } from "./tools/historical-prices-tool";
 
 const Messages = ({ messages }: { messages: UIMessage[] }) => {
   return messages.map((message) => (
@@ -27,13 +29,7 @@ const Messages = ({ messages }: { messages: UIMessage[] }) => {
                   return <ConversationStatus key={index} status="Getting company profile..." />;
                 case "output-available": {
                   const companyProfileData = part.output as CompanyProfileSchema;
-                  return (
-                    <div key={index} className="my-2 border-blue-200 border-l-2 pl-4">
-                      <pre>
-                        <code>{JSON.stringify(companyProfileData, null, 2)}</code>
-                      </pre>
-                    </div>
-                  );
+                  return <CompanyProfileTool key={index} data={companyProfileData} />;
                 }
                 case "output-error":
                   return (
@@ -55,7 +51,7 @@ const Messages = ({ messages }: { messages: UIMessage[] }) => {
                     intraday?: IntradayPriceSchema;
                     earnings?: EarningsHistoricalSchema[];
                   };
-                  return <EarningsHistoricalChart key={index} data={data} />;
+                  return <EarningsHistoricalTool key={index} data={data} />;
                 }
                 case "output-error":
                   return (
@@ -77,7 +73,7 @@ const Messages = ({ messages }: { messages: UIMessage[] }) => {
                     intraday: IntradayPriceSchema;
                     gradesConsensus: GradesConsensusSchema;
                   };
-                  return <AnalystRatingChart key={index} data={data} />;
+                  return <AnalystRatingTool key={index} data={data} />;
                 }
                 case "output-error":
                   return (
@@ -98,12 +94,19 @@ const Messages = ({ messages }: { messages: UIMessage[] }) => {
                     intraday?: IntradayPriceSchema;
                     historical?: HistoricalPriceSchema[];
                   };
-                  return <HistoricalPricesChart key={index} data={historicalPriceData} />;
+                  return <HistoricalPricesTool key={index} data={historicalPriceData} />;
                 }
                 case "output-error":
                   return (
-                    <div key={index} className="my-2 text-red-500">
-                      Error getting historical prices: {part.errorText}
+                    <div
+                      key={index}
+                      className="z-10 flex gap-2 rounded-md border border-ruby-6 bg-ruby-2 p-3 text-ruby-9 text-sm"
+                    >
+                      <AlertTriangleIcon className="size-5 shrink-0" />
+                      <div className="flex flex-col gap-2">
+                        <p className="font-medium text-md">Error getting historical prices</p>
+                        <p className="text-sm">{part.errorText}</p>
+                      </div>
                     </div>
                   );
                 default:
